@@ -6,17 +6,17 @@ class UserGreeting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.only(left: 10, top: 5, bottom: 30),
       child: Row(
         children: [
           const CircleAvatar(
             radius: 20,
-            backgroundImage: AssetImage('assets/user_avatar.png'),
+            backgroundImage: AssetImage('lib/images/kr5.png'),
           ),
           const SizedBox(width: 10),
           Text(
             'Hi, welcome back Fola',
-            style: Theme.of(context).textTheme.titleLarge,
+            style: Theme.of(context).textTheme.titleMedium,
           ),
         ],
       ),

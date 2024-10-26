@@ -24,8 +24,8 @@ class CategorySlider extends StatelessWidget {
                         horizontal: 16.0, vertical: 8.0),
                     decoration: BoxDecoration(
                       color: provider.selectedCategoryIndex == index
-                          ? Theme.of(context).primaryColor
-                          : Colors.grey[300],
+                          ? const Color(0xFF2486C2)
+                          : const Color(0xFFc2e9fb),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(

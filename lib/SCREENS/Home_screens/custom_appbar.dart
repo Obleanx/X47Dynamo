@@ -14,16 +14,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           // TODO: Implement drawer functionality
         },
       ),
-      title: Image.asset('lib/images/kk4.png', height: 30),
+      title: Center(child: Image.asset('lib/images/kk4.png', height: 95)),
       actions: [
         IconButton(
-          icon: const Icon(Icons.search, color: Colors.black),
+          icon: const Icon(Icons.search, size: 25, color: Colors.black),
           onPressed: () {
             // TODO: Implement search functionality
           },
         ),
         IconButton(
-          icon: const Icon(Icons.notifications, color: Colors.black),
+          icon: const Icon(Icons.notifications_outlined, color: Colors.black),
           onPressed: () {
             // TODO: Implement notifications functionality
           },
