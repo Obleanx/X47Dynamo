@@ -2,19 +2,20 @@
 import 'package:flutter/material.dart';
 import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
 import 'package:provider/provider.dart';
+import '../../providers/home_provider.dart';
 
 class CustomFloatingActionButton extends StatelessWidget {
   const CustomFloatingActionButton({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<FloatingButtonProvider>(
-      builder: (context, provider, child) {
+    return Consumer2<FloatingButtonProvider, HomeProvider>(
+      builder: (context, floatingProvider, homeProvider, child) {
         return Container(
           margin: const EdgeInsets.only(
-              right: 15,
-              bottom:
-                  60), //to allign the button to the lower right of the screen
+            right: 15,
+            bottom: 60, //to allign the button to the lower right of the screen
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
             gradient: const LinearGradient(
@@ -37,11 +38,13 @@ class CustomFloatingActionButton extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
-              onTap: () => provider.toggleMenu(),
+              onTap: () => floatingProvider.toggleMenu(),
               child: Container(
                 padding: const EdgeInsets.all(16),
-                child: const Icon(
-                  Icons.add,
+                child: Icon(
+                  homeProvider.selectedCategoryIndex == 1
+                      ? Icons.people_outlined
+                      : Icons.add,
                   color: Colors.white,
                   size: 20,
                 ),

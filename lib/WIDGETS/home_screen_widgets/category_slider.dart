@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:kakra/providers/home_provider.dart';
 
 class CategorySlider extends StatelessWidget {
-  const CategorySlider({Key? key}) : super(key: key);
+  const CategorySlider({super.key});
 
   @override
   Widget build(BuildContext context) {
     final categories = ['All', 'Town Square', 'Community', 'Market Place'];
+
     return Consumer<HomeProvider>(
       builder: (context, provider, child) {
         return SingleChildScrollView(
@@ -18,7 +19,9 @@ class CategorySlider extends StatelessWidget {
               (index) => Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: GestureDetector(
-                  onTap: () => provider.setSelectedCategory(index),
+                  onTap: () {
+                    provider.setSelectedCategory(index);
+                  },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 16.0, vertical: 8.0),

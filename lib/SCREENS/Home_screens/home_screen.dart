@@ -3,13 +3,15 @@ import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
 import 'package:kakra/SCREENS/Home_screens/bottom_navBar/bottom_navigation.dart';
 import 'package:kakra/WIDGETS/home_screen_widgets/blur_screen.dart';
 import 'package:kakra/WIDGETS/home_screen_widgets/category_slider.dart';
-import 'package:kakra/SCREENS/Home_screens/custom_appbar.dart';
+import 'package:kakra/SCREENS/Home_screens/appbar.dart';
 import 'package:kakra/SCREENS/Home_screens/post_containers.dart';
 import 'package:kakra/WIDGETS/home_screen_widgets/shazam_likebutton.dart';
 import 'package:kakra/WIDGETS/home_screen_widgets/welcom_texts.dart';
 import 'package:provider/provider.dart';
 import 'package:kakra/providers/home_provider.dart';
+import 'Town square/town_square_post_container.dart';
 
+// Now update the HomeScreen to pass both providers
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -42,8 +44,11 @@ class HomeScreen extends StatelessWidget {
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: homeProvider.posts.length,
                                 itemBuilder: (context, index) {
-                                  return PostContainer(
-                                      post: homeProvider.posts[index]);
+                                  return homeProvider.selectedCategoryIndex == 1
+                                      ? TownSquarePostContainer(
+                                          post: homeProvider.posts[index])
+                                      : PostContainer(
+                                          post: homeProvider.posts[index]);
                                 },
                               );
                             },

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:kakra/SCREENS/Home_screens/hamburger.dart';
+import 'package:kakra/WIDGETS/home_screen_widgets/blur_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({Key? key}) : super(key: key);
@@ -11,7 +13,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: const Icon(Icons.menu, color: Colors.black),
         onPressed: () {
-          // TODO: Implement drawer functionality
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Hamburger()),
+          );
         },
       ),
       title: Center(child: Image.asset('lib/images/kk4.png', height: 95)),

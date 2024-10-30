@@ -45,7 +45,7 @@ class MenuOverlay extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   _buildMenuItem(
-                    icon: Icons.people_outline,
+                    icon: Icons.groups_outlined,
                     label: 'Community',
                     iconColor: const Color(0xFF2486C2),
                     onTap: () {
