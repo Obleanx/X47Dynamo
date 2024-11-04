@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
+
+import 'package:kakra/WIDGETS/pop_scaffold.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   const CustomBottomNavBar({super.key});
@@ -71,8 +74,8 @@ class CustomBottomNavBar extends StatelessWidget {
             Navigator.pushNamed(context, '/home');
             break;
           case 1:
-            // Navigate to Create
-            Navigator.pushNamed(context, '/create');
+            // Show Create Modal
+            _showCreateModal(context);
             break;
           case 2:
             // Navigate to Messages
@@ -85,6 +88,34 @@ class CustomBottomNavBar extends StatelessWidget {
           default:
             break;
         }
+      },
+    );
+  }
+
+  void _showCreateModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true, // Enables outside-tap dismissal
+      backgroundColor: Colors.transparent, // Transparent to show blur effect
+      builder: (context) {
+        return Stack(
+          children: [
+            // Background Blur
+            GestureDetector(
+              onTap: () =>
+                  Navigator.pop(context), // Tapping outside closes the modal
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 1, sigmaY: 1),
+                child: Container(
+                  color: Colors.black.withOpacity(0.55),
+                ),
+              ),
+            ),
+            // Modal Content
+            const CreateModal(), // Use the reusable modal widget here
+          ],
+        );
       },
     );
   }

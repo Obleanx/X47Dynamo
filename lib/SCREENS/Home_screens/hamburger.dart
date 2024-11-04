@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:ui'; // Import for BackdropFilter
+import 'dart:ui';
+
+import 'package:kakra/SCREENS/Home_screens/home_screen.dart'; // Import for BackdropFilter
 
 class Hamburger extends StatelessWidget {
   const Hamburger({super.key});
@@ -16,7 +18,10 @@ class Hamburger extends StatelessWidget {
             backgroundColor: Colors.white,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              ),
             ),
             title: Row(
               children: [
@@ -164,43 +169,39 @@ class Hamburger extends StatelessWidget {
     return Container(
       width: (MediaQuery.of(context).size.width - 50) / 2,
       height: 70,
-      // Remove unnecessary Stack since we want the blur to cover everything
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white, // Set the background color to white
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+              color: Colors.grey.shade300, // Ash-colored border
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 7,
+                offset: const Offset(0, 5),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
+            ],
+          ),
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, size: 20, color: const Color(0xFF2486C2)),
+              const SizedBox(height: 4),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Colors.black,
                 ),
-              ],
-            ),
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(icon, size: 20, color: const Color(0xFF2486C2)),
-                const SizedBox(height: 4),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.black,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
@@ -212,43 +213,34 @@ class Hamburger extends StatelessWidget {
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 56, // Fixed height for consistency
-      // Remove unnecessary Stack
-      child: ClipRRect(
+      decoration: BoxDecoration(
+        color: Colors.white, // Solid white background
         borderRadius: BorderRadius.circular(12),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Icon(icon, size: 24, color: Colors.blue),
-                const SizedBox(width: 10),
-                Text(
-                  platform,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[800],
-                  ),
-                ),
-              ],
+        border: Border.all(
+          color: Colors.grey.shade300, // Ash-colored border
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Row(
+        children: [
+          Icon(icon, size: 24, color: Colors.blue),
+          const SizedBox(width: 10),
+          Text(
+            platform,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[800],
             ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -21,7 +21,7 @@ class MenuOverlay extends StatelessWidget {
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
               child: Container(
-                color: Colors.black.withOpacity(0.75),
+                color: Colors.black.withOpacity(0.85),
               ),
             ),
           ),
