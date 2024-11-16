@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class ViewProduct {
   final String name;
   final double price;
@@ -14,4 +16,9 @@ class ViewProduct {
     required this.sellerName,
     required this.sellerJoinDate,
   });
+}
+
+// ViewModel
+class SellerDetailsViewModel extends ChangeNotifier {
+  // Add your state management logic here
 }

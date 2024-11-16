@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kakra/MODELS/product_.dart';
 import 'package:kakra/PROVIDERS/product_description_provider.dart';
+import 'package:kakra/PROVIDERS/seller_details.dart';
 import 'package:kakra/WIDGETS/MARKET_PLACE/action_button.dart';
+import 'package:kakra/WIDGETS/MARKET_PLACE/expandable_text.dart';
 import 'package:kakra/WIDGETS/MARKET_PLACE/recommende_products.dart';
 import 'package:kakra/WIDGETS/MARKET_PLACE/related_products.dart';
 import 'package:provider/provider.dart';
@@ -61,8 +63,8 @@ class ProductDetailsScreen extends StatelessWidget {
                                 provider.updateImage(productImages[i]);
                               },
                               child: Container(
-                                width: 60,
-                                height: 60,
+                                width: 50,
+                                height: 50,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
@@ -98,24 +100,33 @@ class ProductDetailsScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 22),
+
+                      // descibes the item the seller wants to sell from name to price and detailed description
                       Text(
                         product.name,
                         style: const TextStyle(
-                          fontSize: 24,
-                          // fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 5),
                       Text(
                         '\$${product.price.toStringAsFixed(2)}',
                         style: const TextStyle(
-                          fontSize: 20,
+                          fontSize: 15,
                           color: Colors.blue,
                         ),
                       ),
                       const SizedBox(height: 16),
-                      Text(product.description),
+                      ExpandableText(
+                        text: product.description,
+                        maxLines: 4,
+                        style: const TextStyle(
+                          color: Colors.black54,
+                        ),
+                      ),
+
                       const Divider(height: 32),
 
                       // Action Icons
@@ -146,6 +157,7 @@ class ProductDetailsScreen extends StatelessWidget {
                       ),
 
                       const Divider(height: 32),
+                      const SizedBox(height: 25),
 
                       // Seller Information
                       const Text(
@@ -155,32 +167,42 @@ class ProductDetailsScreen extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      Row(
+                      const SizedBox(height: 8),
+
+                      // details of the seller are below.
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CircleAvatar(
-                            radius: 30,
-                            backgroundImage: AssetImage('lib/images/mdp3.jpg'),
+                          Row(
+                            children: [
+                              const CircleAvatar(
+                                radius: 30,
+                                backgroundImage:
+                                    AssetImage('lib/images/mdp3.jpg'),
+                              ),
+                              const Spacer(),
+                              TextButton(
+                                onPressed: () {
+// Navigate to the screen
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const SellerDetailsProvider()),
+                                  );
+                                },
+                                child: const Text('See Profile'),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  product.sellerName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text('Joined on ${product.sellerJoinDate}'),
-                              ],
+                          const SizedBox(height: 16),
+                          Text(
+                            product.sellerName,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {/* Navigate to seller profile */},
-                            child: const Text('See Profile'),
-                          ),
+                          Text('Joined on ${product.sellerJoinDate}'),
                         ],
                       ),
 

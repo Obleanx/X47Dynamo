@@ -205,9 +205,18 @@ class ProductCard extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => ProductDetailsScreen(
                 product: ViewProduct(
-                  name: "Product Name",
+                  name: "iPhone 14 Pro Max (148GB, Space Black)",
                   price: 99.99,
-                  description: "Product description",
+                  description:
+                      "The iPhone 14 Pro Max in Space Black redefines innovation with cutting-edge technology and unmatched style. "
+                      "Packed with 148GB of storage, this flagship device ensures ample space for your photos, videos, and apps while delivering top-notch performance.\n\n"
+                      "Key Features:\n"
+                      "- Stunning Design: The Space Black finish exudes sophistication and elegance, making it a perfect companion for any occasion.\n"
+                      "- Pro Camera System: Capture life’s moments in extraordinary detail with advanced photography and videography capabilities.\n"
+                      "- Super Retina XDR Display: Enjoy vibrant, true-to-life visuals on the expansive display, perfect for gaming, streaming, and multitasking.\n"
+                      "- Powerful A16 Bionic Chip: Experience unparalleled speed, efficiency, and performance for demanding tasks and everyday use.\n"
+                      "- Long-lasting Battery Life: Stay connected and productive throughout the day without interruptions.\n"
+                      "- 148GB Storage: Store your favorite memories, media, and files effortlessly.\n\n",
                   images: ["lib/images/kr6.png", "lib/images/kr7.png"],
                   sellerName: "Seller Name",
                   sellerJoinDate: "Jan 1, 2024",
@@ -218,8 +227,7 @@ class ProductCard extends StatelessWidget {
         },
         child: SizedBox(
           // Wrap Column in SizedBox to constrain height
-          height: MediaQuery.of(context).size.width *
-              1.2, // Adjust this multiplier as needed
+          height: MediaQuery.of(context).size.width * 1.2,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,

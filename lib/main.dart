@@ -14,6 +14,8 @@ import 'package:kakra/SCREENS/welcom_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'PROVIDERS/seller_details.dart';
+
 void main() {
   runApp(
     MultiProvider(

@@ -67,3 +67,66 @@ class _ProductCard extends StatelessWidget {
     );
   }
 }
+
+// Constants
+class AppColors {
+  static const Color primary = Color(0xFF2486C2);
+  static const Color secondary = Color(0xFF2BBCE7);
+}
+
+// Reusable Product Card Widget
+class ProductCard2 extends StatelessWidget {
+  final String imageUrl;
+  final String name;
+  final double price;
+  final VoidCallback onTap;
+
+  const ProductCard2({
+    super.key,
+    required this.imageUrl,
+    required this.name,
+    required this.price,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 120,
+            height: 120,
+            margin: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              image: DecorationImage(
+                image: AssetImage(imageUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              name,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              '\$${price.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
