@@ -1,116 +1,181 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:kakra/SCREENS/Home_screens/bottom_navBar/messages.dart';
 
-// Chat Message Provider
+class ChatMessage {
+  final String userName;
+  final String message;
+  final String time;
+  final int unreadCount;
+  final String avatarAsset; // Change from avatarUrl to avatarAsset
+  final bool isOnline;
+
+  ChatMessage({
+    required this.userName,
+    required this.message,
+    required this.time,
+    required this.unreadCount,
+    required this.avatarAsset, // Update property name here
+    required this.isOnline,
+  });
+}
+
 class ChatMessageProvider extends ChangeNotifier {
   late BuildContext _context;
+  late final List<ChatMessage> _messages;
+
+  ChatMessageProvider() {
+    _initProvider();
+  }
+
+  void _initProvider() {
+    _generateChatMessages();
+  }
+
+  final Random _random = Random();
+
+  final List<String> _avatarImages = [
+    'mdp1.jpg',
+    'mdp2.jpg',
+    'mdp3.jpg',
+    'mdp4.jpg',
+    'mdp5.jpg',
+    'mdp6.jpg',
+    'mdp7.jpg',
+    'mdp8.jpg',
+    'fdp1.jpg',
+    'fdp2.jpg',
+    'fdp3.jpg',
+    'fdp4.jpg',
+    'fdp5.jpg',
+    'fdp6.jpg',
+    'fdp7.jpg',
+    'fdp8.jpg',
+    'fdp9.jpg',
+    'fdp10.jpg',
+    'fdp11.jpg',
+    'fdp12.jpg',
+  ];
+
+  void _generateChatMessages() {
+    _messages = [
+      ChatMessage(
+        userName: 'Paul Walker',
+        message: 'This is perfect',
+        time: '12:34 PM',
+        unreadCount: 2,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: true,
+      ),
+      ChatMessage(
+        userName: 'Alice Johnson',
+        message: 'Hey, how have you been?',
+        time: '9:15 AM',
+        unreadCount: 3,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: false,
+      ),
+      ChatMessage(
+        userName: 'Michael Brown',
+        message: 'Sure, I’ll get back to you later.',
+        time: '10:50 AM',
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: true,
+        unreadCount: 2,
+      ),
+      ChatMessage(
+        userName: 'Sophia Garcia',
+        message: 'Can you send over the report?',
+        time: '11:25 AM',
+        unreadCount: 3,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: true,
+      ),
+      ChatMessage(
+        userName: 'James Wilson',
+        message: 'Great job on the project!',
+        time: 'Yesterday',
+        unreadCount: 1,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: false,
+      ),
+      ChatMessage(
+        userName: 'Olivia Martin',
+        message: 'Looking forward to the weekend.',
+        time: 'Yesterday',
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: false,
+        unreadCount: 0,
+      ),
+      ChatMessage(
+        userName: 'Liam Rodriguez',
+        message: 'Let’s catch up soon!',
+        time: '2 days ago',
+        unreadCount: 4,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: true,
+      ),
+      ChatMessage(
+        userName: 'Emily Clark',
+        message: 'I’ll send the details shortly.',
+        time: '3 days ago',
+        unreadCount: 6,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: false,
+      ),
+      ChatMessage(
+        userName: 'Benjamin Scott',
+        message: 'Good morning! How are you?',
+        time: '12:34 PM',
+        unreadCount: 0,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: true,
+      ),
+      ChatMessage(
+        userName: 'Ava Moore',
+        message: 'I’ll be there in 10 minutes.',
+        time: '5 days ago',
+        unreadCount: 2,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: true,
+      ),
+      ChatMessage(
+        userName: 'Ethan Lee',
+        message: 'See you at the event!',
+        time: '6 days ago',
+        unreadCount: 0,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: false,
+      ),
+      ChatMessage(
+        userName: 'Isabella King',
+        message: 'Thanks for the help!',
+        time: '9:15 AM',
+        unreadCount: 1,
+        avatarAsset:
+            'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
+        isOnline: true,
+      ),
+    ];
+  }
 
   void setContext(BuildContext context) {
     _context = context;
   }
 
-  final List<ChatMessage> _messages = [
-    ChatMessage(
-      userName: 'Paul Walker',
-      message: 'This is perfect',
-      time: '12:34 PM',
-      unreadCount: 2,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=1',
-      isOnline: true,
-    ),
-    ChatMessage(
-      userName: 'Emma Johnson',
-      message: 'Hey! Are we still on for the meeting?',
-      time: '9:15 AM',
-      unreadCount: 5,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=2',
-      isOnline: false,
-    ),
-    ChatMessage(
-      userName: 'Michael Brown',
-      message: 'Sure, I’ll get back to you later.',
-      time: '10:50 AM',
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=3',
-      isOnline: true,
-    ),
-    ChatMessage(
-      userName: 'Sophia Garcia',
-      message: 'Can you send over the report?',
-      time: '11:25 AM',
-      unreadCount: 3,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=4',
-      isOnline: false,
-    ),
-    ChatMessage(
-      userName: 'James Wilson',
-      message: 'Great job on the project!',
-      time: 'Yesterday',
-      unreadCount: 1,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=5',
-      isOnline: false,
-    ),
-    ChatMessage(
-      userName: 'Olivia Martin',
-      message: 'Looking forward to the weekend.',
-      time: 'Yesterday',
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=6',
-      isOnline: false,
-    ),
-    ChatMessage(
-      userName: 'Liam Rodriguez',
-      message: 'Let’s catch up soon!',
-      time: '2 days ago',
-      unreadCount: 4,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=7',
-      isOnline: true,
-    ),
-    ChatMessage(
-      userName: 'Emily Clark',
-      message: 'I’ll send the details shortly.',
-      time: '3 days ago',
-      unreadCount: 6,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=8',
-      isOnline: false,
-    ),
-    ChatMessage(
-      userName: 'Benjamin Scott',
-      message: 'Good morning! How are you?',
-      time: '4 days ago',
-      unreadCount: 0,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=9',
-      isOnline: true,
-    ),
-    ChatMessage(
-      userName: 'Ava Moore',
-      message: 'I’ll be there in 10 minutes.',
-      time: '5 days ago',
-      unreadCount: 2,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=10',
-      isOnline: true,
-    ),
-    ChatMessage(
-      userName: 'Ethan Lee',
-      message: 'See you at the event!',
-      time: '6 days ago',
-      unreadCount: 0,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=11',
-      isOnline: false,
-    ),
-    ChatMessage(
-      userName: 'Isabella King',
-      message: 'Thanks for the help!',
-      time: 'Last week',
-      unreadCount: 1,
-      avatarUrl: 'https://source.unsplash.com/random/200x200?sig=12',
-      isOnline: true,
-    ),
-  ];
-
   List<ChatMessage> get messages => _messages;
 
   void navigateToChat(int index) {
-    // Navigate to the chat screen for the selected message
-    // You can pass the selected ChatMessage object as an argument
     Navigator.pushNamed(
       _context,
       '/chat',

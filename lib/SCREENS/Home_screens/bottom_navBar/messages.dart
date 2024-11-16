@@ -1,29 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:kakra/PROVIDERS/messages_provider.dart';
 import 'package:kakra/SCREENS/Home_screens/bottom_navBar/chat_screen.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
-import 'package:provider/provider.dart';
 
-// Chat Message Model
-class ChatMessage {
-  final String userName;
-  final String message;
-  final String time;
-  final int unreadCount;
-  final String avatarUrl;
-  final bool isOnline;
-
-  ChatMessage({
-    required this.userName,
-    required this.message,
-    required this.time,
-    this.unreadCount = 0,
-    required this.avatarUrl,
-    required this.isOnline,
-  });
-}
-
-// Chat Message Screen
 class ChatMessageScreen extends StatelessWidget {
   const ChatMessageScreen({super.key});
 
@@ -36,44 +16,61 @@ class ChatMessageScreen extends StatelessWidget {
         return provider;
       },
       child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () => Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
-            ),
-          ),
-          title: const Text('Messages'),
-        ),
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      style:
-                          const TextStyle(fontSize: 12.0), // Reduced font size
-                      decoration: InputDecoration(
-                        hintText: 'Search messages',
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            vertical: 6.0), // Reduced height
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              floating: true,
+              expandedHeight: 140.0,
+              collapsedHeight: 56.0,
+              automaticallyImplyLeading: true,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                ),
+              ),
+              title: const Text("Messages"),
+              flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.pin,
+                background: Container(
+                  alignment: Alignment.bottomCenter,
+                  padding: const EdgeInsets.only(
+                    bottom: 16.0,
+                    left: 16.0,
+                    right: 16.0,
+                  ),
+                  child: TextField(
+                    style: const TextStyle(fontSize: 12.0),
+                    decoration: InputDecoration(
+                      hintText: 'Search messages',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.0),
                       ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 6.0),
+                      filled: true,
+                      fillColor: Colors.white,
                     ),
                   ),
-                ],
+                ),
               ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.more_vert),
+                  onPressed: () {
+                    // Additional action
+                  },
+                ),
+              ],
             ),
-            Expanded(
+            SliverToBoxAdapter(
               child: Consumer<ChatMessageProvider>(
                 builder: (context, provider, child) {
                   return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: provider.messages.length,
                     itemBuilder: (context, index) {
                       final message = provider.messages[index];
@@ -99,7 +96,7 @@ class ChatMessageScreen extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     backgroundImage:
-                                        NetworkImage(message.avatarUrl),
+                                        AssetImage(message.avatarAsset),
                                   ),
                                   if (message.isOnline)
                                     const CircleAvatar(
@@ -123,9 +120,8 @@ class ChatMessageScreen extends StatelessWidget {
                                     const SizedBox(height: 4),
                                     Text(
                                       message.message,
-                                      style: const TextStyle(
-                                        color: Colors.grey,
-                                      ),
+                                      style:
+                                          const TextStyle(color: Colors.grey),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -144,20 +140,21 @@ class ChatMessageScreen extends StatelessWidget {
                                     ),
                                   ),
                                   const SizedBox(height: 4),
-                                  Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      message.unreadCount.toString(),
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
+                                  if (message.unreadCount > 0)
+                                    Container(
+                                      padding: const EdgeInsets.all(4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Text(
+                                        message.unreadCount.toString(),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                        ),
                                       ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ],

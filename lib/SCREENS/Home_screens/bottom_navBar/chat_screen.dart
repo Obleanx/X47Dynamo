@@ -33,8 +33,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 const Center(
                   child: CircleAvatar(
                     radius: 30, // Increased radius
-                    backgroundImage: NetworkImage(
-                      'https://source.unsplash.com/random/100x100?sig=1',
+                    backgroundImage: AssetImage(
+                      'lib/images/mdp6.jpg',
                     ),
                   ),
                 ),

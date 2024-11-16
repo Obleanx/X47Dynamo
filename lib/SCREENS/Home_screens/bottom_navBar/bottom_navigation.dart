@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-
 import 'package:kakra/WIDGETS/pop_scaffold.dart';
 
 class CustomBottomNavBar extends StatelessWidget {

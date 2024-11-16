@@ -25,13 +25,11 @@ class CustomTextField extends StatelessWidget {
         obscureText: obscureText,
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 13), // Set label text color to black
+          labelStyle: const TextStyle(color: Colors.black, fontSize: 13),
           border: InputBorder.none,
           contentPadding:
               const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+          fillColor: Colors.white,
         ),
         onSaved: onSaved,
         validator: validator,

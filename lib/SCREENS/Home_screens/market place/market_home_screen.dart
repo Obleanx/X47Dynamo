@@ -1,0 +1,276 @@
+import 'package:flutter/material.dart';
+import 'package:kakra/MODELS/product_.dart';
+import 'package:kakra/PROVIDERS/market_place_provider.dart';
+import 'package:kakra/WIDGETS/_appbar.dart';
+import 'package:provider/provider.dart';
+
+import '../../../WIDGETS/MARKET_PLACE/product_details.dart';
+
+// Product Model
+class Product {
+  final String id;
+  final String name;
+  final double price;
+  final String assetimage;
+  final String category;
+
+  Product({
+    required this.id,
+    required this.name,
+    required this.price,
+    required this.assetimage,
+    required this.category,
+  });
+}
+
+class MarketplaceContent extends StatelessWidget {
+  const MarketplaceContent({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          CustomExpandableAppBar(
+            title: "Marketplace",
+            expandedHeight: 140.0,
+            collapsedHeight: 56.0,
+            automaticallyImplyLeading: true,
+            onBackPressed: () => Navigator.pop(context),
+            flexibleContent: Container(
+              alignment: Alignment.bottomCenter,
+              padding: const EdgeInsets.all(10.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search products...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
+                ),
+              ),
+            ),
+          ),
+
+          // Action Buttons
+          SliverToBoxAdapter(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  _ActionButton(
+                    icon: Icons.edit_note_outlined,
+                    label: 'Become a Seller',
+                    onTap: () {
+                      // Navigate to seller registration
+                    },
+                  ),
+                  _ActionButton(
+                    icon: Icons.category_outlined,
+                    label: 'Categories',
+                    onTap: () {
+                      // Show categories
+                    },
+                  ),
+                  _ActionButton(
+                    icon: Icons.shopping_cart_outlined,
+                    label: 'My Listings',
+                    onTap: () {
+                      // Navigate to listings
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.filter),
+                    onPressed: () {
+                      // Show filter options
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Today's Items Header
+          const SliverPadding(
+            padding: EdgeInsets.all(10.0),
+            sliver: SliverToBoxAdapter(
+              child: Text(
+                "Today's Items",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
+          // Products Grid
+          SliverPadding(
+            padding: const EdgeInsets.all(16.0),
+            sliver: Consumer<ProductProvider>(
+              builder: (context, provider, child) {
+                return SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.75,
+                    mainAxisSpacing: 16.0,
+                    crossAxisSpacing: 16.0,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final product = provider.products[index];
+                      return ProductCard(product: product);
+                    },
+                    childCount: provider.products.length,
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Action Button Widget
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Material(
+        color: const Color(0xFF2486C2),
+        borderRadius: BorderRadius.circular(3.0),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8.0),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 7.0,
+              vertical: 3.0,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  icon,
+                  color: Colors.white,
+                  size: 14,
+                ),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ProductCard extends StatelessWidget {
+  final Product product;
+
+  const ProductCard({
+    super.key,
+    required this.product,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16.0),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailsScreen(
+                product: ViewProduct(
+                  name: "Product Name",
+                  price: 99.99,
+                  description: "Product description",
+                  images: ["image_url1", "image_url2"],
+                  sellerName: "Seller Name",
+                  sellerJoinDate: "Jan 1, 2024",
+                ),
+              ),
+            ),
+          );
+        },
+        child: SizedBox(
+          // Wrap Column in SizedBox to constrain height
+          height: MediaQuery.of(context).size.width *
+              1.2, // Adjust this multiplier as needed
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                // Wrap Card with Expanded
+                child: Card(
+                  color: Colors.white,
+                  margin: EdgeInsets.zero,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(3.0),
+                    child: Image.asset(
+                      product.assetimage,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(3.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name,
+                      style: const TextStyle(
+                        fontSize: 12.0,
+                        fontWeight: FontWeight.w900,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4.0),
+                    Text(
+                      '₦${product.price.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 12.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

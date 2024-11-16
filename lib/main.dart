@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:kakra/PROVIDERS/auth_provider.dart';
 import 'package:kakra/PROVIDERS/home_provider.dart';
+import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import 'package:kakra/PROVIDERS/messages_provider.dart';
 import 'package:kakra/PROVIDERS/onboarding_provider.dart';
+import 'package:kakra/PROVIDERS/product_description_provider.dart';
 import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
 import 'package:kakra/SCREENS/Home_screens/bottom_navBar/messages.dart';
+import 'package:kakra/SCREENS/Home_screens/bottom_navBar/profile.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
 import 'package:kakra/SCREENS/all_onboarding_screens.dart';
 import 'package:kakra/SCREENS/welcom_screen.dart';
@@ -20,6 +23,8 @@ void main() {
         ChangeNotifierProvider(create: (_) => FloatingButtonProvider()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
         ChangeNotifierProvider(create: (_) => ChatMessageProvider()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => ProductImageProvider()),
       ],
       child: const MyApp(),
     ),
@@ -51,7 +56,8 @@ class MyApp extends StatelessWidget {
         '/': (context) => WelcomeScreen(),
         '/onboarding': (context) => const AllOnboardingScreens(),
         '/home': (context) => const HomeScreen(),
-        '/messages': (context) => ChatMessageScreen(),
+        '/messages': (context) => const ChatMessageScreen(),
+        '/profile': (context) => const ProfileScreen(),
       },
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kakra/SCREENS/Home_screens/market%20place/market_home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:kakra/providers/home_provider.dart';
 
@@ -21,6 +22,15 @@ class CategorySlider extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () {
                     provider.setSelectedCategory(index);
+                    // Navigate to MarketplaceHomeScreen if "Market Place" is selected
+                    if (categories[index] == 'Market Place') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MarketplaceContent(),
+                        ),
+                      );
+                    }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(

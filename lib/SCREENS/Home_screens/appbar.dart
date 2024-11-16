@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kakra/SCREENS/Home_screens/hamburger.dart';
-import 'package:kakra/WIDGETS/home_screen_widgets/blur_screen.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({Key? key}) : super(key: key);

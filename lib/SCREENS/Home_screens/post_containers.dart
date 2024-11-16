@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
-class PostContainer extends StatelessWidget {
+class PostContainer extends StatefulWidget {
   final Map<String, dynamic> post;
 
   const PostContainer({Key? key, required this.post}) : super(key: key);
 
+  @override
+  State<PostContainer> createState() => _PostContainerState();
+}
+
+int _likeCount = 0;
+bool _isLiked = false;
+
+class _PostContainerState extends State<PostContainer> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -28,12 +36,12 @@ class PostContainer extends StatelessWidget {
                   Row(
                     children: [
                       CircleAvatar(
-                        backgroundImage: AssetImage(post['avatar']),
+                        backgroundImage: AssetImage(widget.post['avatar']),
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          '${post['name']} posted in ${post['group']}',
+                          '${widget.post['name']} posted in ${widget.post['group']}',
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -51,7 +59,7 @@ class PostContainer extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    post['content'],
+                    widget.post['content'],
                     style: const TextStyle(color: Colors.black87),
                   ),
                   const SizedBox(height: 10),
@@ -60,15 +68,16 @@ class PostContainer extends StatelessWidget {
                       const Icon(Icons.access_time,
                           size: 16, color: Colors.black54),
                       const SizedBox(width: 5),
-                      Text(post['time'],
+                      Text(widget.post['time'],
                           style: const TextStyle(color: Colors.black54)),
                     ],
                   ),
-                  if (post.containsKey('image')) ...[
+                  if (widget.post.containsKey('image')) ...[
                     const SizedBox(height: 10),
                     ClipRRect(
                       borderRadius: BorderRadius.circular(10),
-                      child: Image.asset(post['image'], fit: BoxFit.cover),
+                      child:
+                          Image.asset(widget.post['image'], fit: BoxFit.cover),
                     ),
                   ],
                   const SizedBox(height: 10),
@@ -81,9 +90,16 @@ class PostContainer extends StatelessWidget {
                             // TODO: Implement chat functionality
                           }),
                           const SizedBox(width: 30),
-                          _buildGlassIcon(Icons.favorite_border, () {
-                            // TODO: Implement like functionality
-                          }),
+                          _buildGlassIcon(
+                            _isLiked ? Icons.favorite : Icons.favorite_border,
+                            () {
+                              setState(() {
+                                _isLiked = !_isLiked;
+                                _likeCount =
+                                    _isLiked ? _likeCount + 1 : _likeCount - 1;
+                              });
+                            },
+                          ),
                           const SizedBox(width: 40),
                           _buildGlassIcon(Icons.flag_outlined, () {
                             // TODO: Implement flag functionality
@@ -111,7 +127,13 @@ class PostContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
       ),
       child: IconButton(
-        icon: Icon(icon, size: 20, color: Colors.black54),
+        icon: Icon(
+          icon,
+          size: 20,
+          color: icon == Icons.favorite
+              ? (_isLiked ? Colors.red : Colors.black54)
+              : Colors.black54,
+        ),
         onPressed: onPressed,
       ),
     );
