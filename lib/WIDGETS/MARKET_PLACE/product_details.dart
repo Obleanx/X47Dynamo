@@ -4,7 +4,6 @@ import 'package:kakra/PROVIDERS/product_description_provider.dart';
 import 'package:kakra/WIDGETS/MARKET_PLACE/action_button.dart';
 import 'package:kakra/WIDGETS/MARKET_PLACE/recommende_products.dart';
 import 'package:kakra/WIDGETS/MARKET_PLACE/related_products.dart';
-import 'package:kakra/WIDGETS/MARKET_PLACE/thumbnails.dart';
 import 'package:provider/provider.dart';
 
 class ProductDetailsScreen extends StatelessWidget {
@@ -21,7 +20,8 @@ class ProductDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => ProductImageProvider()..updateImage(product.images.first),
+      create: (_) =>
+          ProductImageProvider(productImages[0]), // Initialize with first image
       child: Scaffold(
         body: SafeArea(
           child: SingleChildScrollView(
@@ -30,7 +30,7 @@ class ProductDetailsScreen extends StatelessWidget {
               children: [
                 // Back Button
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.only(left: 5, top: 10),
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.pop(context),
@@ -39,15 +39,11 @@ class ProductDetailsScreen extends StatelessWidget {
 
                 // Main Product Image
                 Consumer<ProductImageProvider>(
-                  builder: (context, imageProvider, _) => Container(
+                  builder: (_, provider, __) => Image.asset(
+                    provider.currentImage,
                     height: 300,
                     width: double.infinity,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(imageProvider.currentImage),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    fit: BoxFit.cover,
                   ),
                 ),
 
@@ -55,14 +51,37 @@ class ProductDetailsScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
-                    children: product.images
-                        .map((image) => ProductImageThumbnail(
-                              imageUrl: image,
-                              onTap: () => context
-                                  .read<ProductImageProvider>()
-                                  .updateImage(image),
-                            ))
-                        .toList(),
+                    children: [
+                      for (int i = 0; i < 4; i++)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Consumer<ProductImageProvider>(
+                            builder: (_, provider, __) => GestureDetector(
+                              onTap: () {
+                                provider.updateImage(productImages[i]);
+                              },
+                              child: Container(
+                                width: 60,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: provider.currentImage ==
+                                            productImages[i]
+                                        ? Colors.blue
+                                        : Colors.transparent,
+                                    width: 2,
+                                  ),
+                                  image: DecorationImage(
+                                    image: AssetImage(productImages[i]),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ),
 
@@ -84,7 +103,7 @@ class ProductDetailsScreen extends StatelessWidget {
                         product.name,
                         style: const TextStyle(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
+                          // fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -104,22 +123,22 @@ class ProductDetailsScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           ActionIcon(
-                            icon: Icons.message,
+                            icon: Icons.message_outlined,
                             label: 'Message',
                             onTap: () {/* Handle message */},
                           ),
                           ActionIcon(
-                            icon: Icons.remove_red_eye,
+                            icon: Icons.remove_red_eye_outlined,
                             label: 'View Post',
                             onTap: () {/* Handle view */},
                           ),
                           ActionIcon(
-                            icon: Icons.share,
+                            icon: Icons.share_outlined,
                             label: 'Share',
                             onTap: () {/* Handle share */},
                           ),
                           ActionIcon(
-                            icon: Icons.bookmark,
+                            icon: Icons.bookmark_add_outlined,
                             label: 'Save',
                             onTap: () {/* Handle save */},
                           ),
@@ -141,7 +160,7 @@ class ProductDetailsScreen extends StatelessWidget {
                         children: [
                           const CircleAvatar(
                             radius: 30,
-                            backgroundImage: NetworkImage('seller_image_url'),
+                            backgroundImage: AssetImage('lib/images/mdp3.jpg'),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -181,7 +200,7 @@ class ProductDetailsScreen extends StatelessWidget {
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: 3, // Number of related products
                         itemBuilder: (context, index) => RelatedProductItem(
-                          imageUrl: 'product_image_url',
+                          imageUrl: 'lib/images/kr${index + 4}.png',
                           name: 'Related Product ${index + 1}',
                           price: 99.99,
                           onTap: () {/* Navigate to product */},

@@ -3,7 +3,6 @@ import 'package:kakra/MODELS/product_.dart';
 import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import 'package:kakra/WIDGETS/_appbar.dart';
 import 'package:provider/provider.dart';
-
 import '../../../WIDGETS/MARKET_PLACE/product_details.dart';
 
 // Product Model
@@ -209,7 +208,7 @@ class ProductCard extends StatelessWidget {
                   name: "Product Name",
                   price: 99.99,
                   description: "Product description",
-                  images: ["image_url1", "image_url2"],
+                  images: ["lib/images/kr6.png", "lib/images/kr7.png"],
                   sellerName: "Seller Name",
                   sellerJoinDate: "Jan 1, 2024",
                 ),

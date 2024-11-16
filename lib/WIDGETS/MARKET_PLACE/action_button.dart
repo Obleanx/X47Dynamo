@@ -20,11 +20,15 @@ class ActionIcon extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.grey[200],
+              color: Color.fromARGB(255, 171, 232, 251),
             ),
-            child: Icon(icon, size: 20),
+            child: Icon(
+              icon,
+              color: Colors.black,
+              size: 16,
+            ),
           ),
           const SizedBox(height: 4),
           Text(label, style: const TextStyle(fontSize: 12)),
