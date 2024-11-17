@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kakra/MODELS/product_.dart';
 import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import 'package:kakra/WIDGETS/_appbar.dart';
+import 'package:kakra/WIDGETS/contents_filter/categories_screen.dart';
 import 'package:provider/provider.dart';
 import '../../../WIDGETS/MARKET_PLACE/product_details.dart';
 
@@ -72,6 +73,11 @@ class MarketplaceContent extends StatelessWidget {
                     label: 'Categories',
                     onTap: () {
                       // Show categories
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CategoriesScreen()),
+                      );
                     },
                   ),
                   _ActionButton(

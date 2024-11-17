@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kakra/PROVIDERS/auth_provider.dart';
+import 'package:kakra/PROVIDERS/categories_provider.dart';
 import 'package:kakra/PROVIDERS/home_provider.dart';
 import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import 'package:kakra/PROVIDERS/messages_provider.dart';
@@ -14,8 +15,6 @@ import 'package:kakra/SCREENS/welcom_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import 'PROVIDERS/seller_details.dart';
-
 void main() {
   runApp(
     MultiProvider(
@@ -27,6 +26,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ChatMessageProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => ProductImageProvider()),
+        ChangeNotifierProvider(create: (_) => CategoriesProvider()),
       ],
       child: const MyApp(),
     ),

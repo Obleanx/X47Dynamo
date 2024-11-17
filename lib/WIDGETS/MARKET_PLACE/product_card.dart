@@ -97,30 +97,41 @@ class ProductCard2 extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 120,
-            height: 120,
-            margin: const EdgeInsets.all(8),
+            width: 140,
+            height: 80,
+            margin: const EdgeInsets.symmetric(
+              horizontal: 10,
+            ),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(3),
               image: DecorationImage(
                 image: AssetImage(imageUrl),
                 fit: BoxFit.cover,
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Text(
-              name,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+          Expanded(
+            // Ensures the remaining items adjust to available space
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+              ),
+              child: Text(
+                name,
+                style: const TextStyle(fontWeight: FontWeight.w900),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 8,
+            ),
             child: Text(
               '\$${price.toStringAsFixed(2)}',
               style: const TextStyle(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
                 color: AppColors.primary,
               ),
             ),

@@ -78,7 +78,8 @@ class _AllOnboardingScreensState extends State<AllOnboardingScreens> {
                   // the skip functionality here
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => SignUpScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const SignUpScreen()),
                   );
                 },
                 child: const Text("Skip"),
@@ -114,7 +115,7 @@ class _AllOnboardingScreensState extends State<AllOnboardingScreens> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => SignUpScreen()),
+                              builder: (context) => const SignUpScreen()),
                         );
                       }
                     },
