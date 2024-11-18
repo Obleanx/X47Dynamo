@@ -169,7 +169,10 @@ class SellerDetailsScreen extends StatelessWidget {
                                 FontAwesomeIcons.sliders,
                                 size: 16,
                               ),
-                              onPressed: () {}),
+                              onPressed: () {
+                                _showCreateModal(
+                                    context); // Directly show the modal
+                              }),
                         ],
                       ),
                     ),
@@ -204,7 +207,7 @@ class SellerDetailsScreen extends StatelessWidget {
                   child: KakraButton(
                     text: 'Message seller',
                     onPressed: () {
-                      _showCreateModal(context); // Directly show the modal
+                      // _showCreateModal(context); // Directly show the modal
                     },
                   )),
             ),

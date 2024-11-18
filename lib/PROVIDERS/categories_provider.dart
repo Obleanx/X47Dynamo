@@ -25,7 +25,7 @@ class CategoriesProvider with ChangeNotifier {
     ),
     CategoryItem(
       name: 'Home & Living',
-      icon: Icons.house_outlined,
+      icon: Icons.home_outlined,
       subCategories: [
         'Decore',
         'Home Appliances',
@@ -40,7 +40,7 @@ class CategoriesProvider with ChangeNotifier {
     ),
     CategoryItem(
       name: 'Health & Wellness',
-      icon: FontAwesomeIcons.heart,
+      icon: FontAwesomeIcons.hospitalUser,
       subCategories: [
         'Fitness Equipments',
         'Beauty Products',
@@ -54,6 +54,14 @@ class CategoriesProvider with ChangeNotifier {
       subCategories: ['Vehicles', 'Bicycles', 'Bikes'],
     ),
   ];
+
+  final ValueNotifier<bool> isPublishEnabled = ValueNotifier(false);
+
+  void validateForm() {
+    // Implement form validation logic
+    // Update isPublishEnabled value
+    isPublishEnabled.value = true; // Set this dynamically
+  }
 
   void toggleCategory(int index) {
     categories[index].isExpanded = !categories[index].isExpanded;

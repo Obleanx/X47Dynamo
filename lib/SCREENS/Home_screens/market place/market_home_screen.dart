@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kakra/MODELS/product_.dart';
 import 'package:kakra/PROVIDERS/market_place_provider.dart';
+import 'package:kakra/SCREENS/sellers_HQ/listings.dart';
+import 'package:kakra/SCREENS/sellers_HQ/seller_hq_screen.dart';
 import 'package:kakra/WIDGETS/_appbar.dart';
 import 'package:kakra/WIDGETS/contents_filter/categories_screen.dart';
 import 'package:provider/provider.dart';
@@ -66,6 +69,11 @@ class MarketplaceContent extends StatelessWidget {
                     label: 'Become a Seller',
                     onTap: () {
                       // Navigate to seller registration
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SellerHQScreen()),
+                      );
                     },
                   ),
                   _ActionButton(
@@ -85,10 +93,20 @@ class MarketplaceContent extends StatelessWidget {
                     label: 'My Listings',
                     onTap: () {
                       // Navigate to listings
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const SellerProductListingScreen()),
+                        //SellerListingView
+                      );
                     },
                   ),
                   IconButton(
-                    icon: const Icon(Icons.filter),
+                    icon: const FaIcon(
+                      FontAwesomeIcons.sliders,
+                      size: 16,
+                    ),
                     onPressed: () {
                       // Show filter options
                     },
