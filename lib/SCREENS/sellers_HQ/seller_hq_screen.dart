@@ -84,19 +84,19 @@ class SellerHQScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // Form Fields
-                  CustomTextField(
+                  CustomTextFieldForSellerrs(
                     label: 'Product/Item Name',
                     onChanged: (value) =>
                         provider.updateField('productName', value),
                   ),
                   const SizedBox(height: 16),
-                  CustomTextField(
+                  CustomTextFieldForSellerrs(
                     label: 'Price',
                     keyboardType: TextInputType.number,
                     onChanged: (value) => provider.updateField('price', value),
                   ),
                   const SizedBox(height: 16),
-                  CustomTextField(
+                  CustomTextFieldForSellerrs(
                     label: 'Description',
                     maxLines: 5,
                     onChanged: (value) =>
@@ -109,7 +109,7 @@ class SellerHQScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // Category TextField
-                  CustomTextField(
+                  CustomTextFieldForSellerrs(
                     label: 'Category',
                     readOnly: true,
                     controller: TextEditingController(
@@ -167,7 +167,7 @@ class SellerHQScreen extends StatelessWidget {
                   const SizedBox(height: 16),
 
                   // Condition TextField
-                  CustomTextField(
+                  CustomTextFieldForSellerrs(
                     label: 'Condition',
                     readOnly: true,
                     controller: TextEditingController(
@@ -229,7 +229,7 @@ class SellerHQScreen extends StatelessWidget {
 }
 
 // Updated CustomTextField widget that include a controller:
-class CustomTextField extends StatelessWidget {
+class CustomTextFieldForSellerrs extends StatelessWidget {
   final String label;
   final TextEditingController? controller;
   final void Function(String)? onChanged;
@@ -239,7 +239,7 @@ class CustomTextField extends StatelessWidget {
   final TextInputType? keyboardType;
   final Widget? suffix;
 
-  const CustomTextField({
+  const CustomTextFieldForSellerrs({
     super.key,
     required this.label,
     this.controller,

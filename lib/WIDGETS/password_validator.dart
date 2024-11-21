@@ -5,8 +5,8 @@ class PasswordValidator extends StatelessWidget {
 
   const PasswordValidator({super.key, required this.password});
 
-  bool _hasFiveCharacters(String password) {
-    return password.length >= 5;
+  bool _hasThreeCharacters(String password) {
+    return password.length >= 4;
   }
 
   bool _hasUpperCase(String password) {
@@ -59,8 +59,8 @@ class PasswordValidator extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         _buildValidationIndicator(
-          isValid: _hasFiveCharacters(password),
-          text: 'At least 5 characters',
+          isValid: _hasThreeCharacters(password),
+          text: 'At least 4 characters',
         ),
         const SizedBox(height: 10),
         _buildValidationIndicator(

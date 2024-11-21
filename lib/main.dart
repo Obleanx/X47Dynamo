@@ -14,10 +14,16 @@ import 'package:kakra/SCREENS/Home_screens/bottom_navBar/profile.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
 import 'package:kakra/SCREENS/all_onboarding_screens.dart';
 import 'package:kakra/SCREENS/welcom_screen.dart';
+import 'package:kakra/SERVICES/options.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
       providers: [

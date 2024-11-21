@@ -3,7 +3,7 @@ import 'package:kakra/PROVIDERS/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class RegistrationTabs extends StatelessWidget {
-  const RegistrationTabs({Key? key}) : super(key: key);
+  const RegistrationTabs({super.key});
 
   @override
   Widget build(BuildContext context) {

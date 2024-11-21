@@ -19,7 +19,6 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   late TextEditingController _confirmPasswordController;
 
   String _password = '';
-  String _confirmPassword = '';
   bool _isConfirmPasswordVisible = false;
 
   @override
@@ -68,14 +67,16 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
 
                 // Password Text Field
                 PasswordTextField(
-                  controller: _passwordController,
-                  obscureText: true,
+                  controller: _confirmPasswordController,
                   onChanged: (value) {
+                    setState(() {});
+                  },
+                  isVisible: _isConfirmPasswordVisible,
+                  toggleVisibility: () {
                     setState(() {
-                      _password = value;
+                      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
                     });
                   },
-                  label: "Password",
                 ),
                 // Password Validator
                 const SizedBox(height: 20),
@@ -85,9 +86,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 ConfirmPasswordTextField(
                   controller: _confirmPasswordController,
                   onChanged: (value) {
-                    setState(() {
-                      _confirmPassword = value;
-                    });
+                    setState(() {});
                   },
                   isVisible: _isConfirmPasswordVisible,
                   toggleVisibility: () {

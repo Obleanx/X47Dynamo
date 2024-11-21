@@ -1,9 +1,14 @@
+import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:kakra/SCREENS/sellers_HQ/seller_hq_screen.dart';
+import 'package:kakra/SERVICES/media_services.dart';
 import 'package:kakra/WIDGETS/customtext_fileds.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  const ProfileScreen({super.key});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -12,15 +17,90 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, String> _formData = {};
+  final MediaService _mediaService = MediaService();
 
-  void _saveForm() {
-    if (_formKey.currentState?.validate() ?? false) {
-      _formKey.currentState?.save();
-      // Handle form submission
+  File? _profileImage;
+  String? _profileImageUrl;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final userDoc =
+            await _firestore.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          setState(() {
+            _profileImageUrl = userDoc.data()?['profileImageUrl'];
+          });
+        }
+      }
+    } catch (e) {
       if (kDebugMode) {
-        print('Form Data: $_formData');
+        print('Error loading user profile: $e');
       }
     }
+  }
+
+  Future<void> _updateUserProfile() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        await _firestore.collection('users').doc(user.uid).update(_formData);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Profile updated successfully')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating profile: $e')),
+      );
+    }
+  }
+
+  void _onChangeProfilePicture() {
+    _mediaService.showImageSourceBottomSheet(
+      context: context,
+      onImageSelected: (File? image) async {
+        if (image != null) {
+          // Upload image to Firebase Storage
+          final uploadedImageUrl = await _mediaService.uploadImage(
+            imageFile: image,
+            context: context,
+          );
+
+          // Update user profile in Firestore
+          if (uploadedImageUrl != null) {
+            try {
+              final user = _auth.currentUser;
+              if (user != null) {
+                await _firestore.collection('users').doc(user.uid).update({
+                  'profileImageUrl': uploadedImageUrl,
+                });
+
+                setState(() {
+                  _profileImage = image;
+                  _profileImageUrl = uploadedImageUrl;
+                });
+              }
+            } catch (e) {
+              // ignore: use_build_context_synchronously
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Error updating profile picture: $e')),
+              );
+            }
+          }
+        }
+      },
+    );
   }
 
   @override
@@ -55,43 +135,61 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Center(
                   child: Column(
                     children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.grey),
-                        ),
-                        child: const CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.grey,
-                          child: Icon(
-                            Icons.camera_alt,
-                            size: 40,
-                            color: Colors.white,
+                      GestureDetector(
+                        onTap: _onChangeProfilePicture,
+                        child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.grey),
                           ),
+                          child: _profileImageUrl != null
+                              ? CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(_profileImageUrl!),
+                                  radius: 50,
+                                )
+                              : _profileImage != null
+                                  ? CircleAvatar(
+                                      backgroundImage:
+                                          FileImage(_profileImage!),
+                                      radius: 50,
+                                    )
+                                  : const CircleAvatar(
+                                      radius: 50,
+                                      backgroundColor: Colors.grey,
+                                      child: Icon(
+                                        Icons.camera_alt,
+                                        size: 40,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                         ),
                       ),
                       TextButton(
-                        onPressed: () {
-                          // Handle photo change
-                        },
+                        onPressed: _onChangeProfilePicture,
                         child: const Text('Change Photo'),
                       ),
-                      const SizedBox(height: 10),
-                      GestureDetector(
-                        onTap: () {
-                          // Handle become seller action
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SellerHQScreen(),
+                            ),
+                          );
                         },
                         child: const Text(
                           'Become a Seller',
                           style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF2BBCE7)),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF2BBCE7),
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),
@@ -176,7 +274,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: _saveForm,
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2BBCE7),
                       padding: const EdgeInsets.symmetric(vertical: 15),

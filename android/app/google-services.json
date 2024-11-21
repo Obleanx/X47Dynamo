@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "54357462485",
+    "project_id": "kakra-1e247",
+    "storage_bucket": "kakra-1e247.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54357462485:android:842245c20a3d52b38dc15c",
+        "android_client_info": {
+          "package_name": "com.example.kakra"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBfHw48ffZa_0cmGypvKf6ihnLEFaAI6nc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

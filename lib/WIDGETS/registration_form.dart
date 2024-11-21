@@ -5,7 +5,7 @@ import 'package:kakra/WIDGETS/customtext_fileds.dart';
 import 'package:provider/provider.dart';
 
 class RegistrationForm extends StatelessWidget {
-  const RegistrationForm({Key? key}) : super(key: key);
+  const RegistrationForm({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,33 +36,36 @@ class RegistrationForm extends StatelessWidget {
               CustomTextField(
                 label: "African Phone Number",
                 onSaved: (value) => provider.africanPhoneNumber = value,
-                validator: (value) => provider.validatePhoneNumber(value),
+                validator: (value) =>
+                    provider.validateAfricanPhoneNumber(value),
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 20),
               CustomTextField(
                 label: "Foreign Phone Number",
                 onSaved: (value) => provider.foreignPhoneNumber = value,
-                validator: (value) => provider.validatePhoneNumber(value),
+                validator: (value) =>
+                    provider.validateForeignPhoneNumber(value),
               ),
               const SizedBox(height: 25),
               CustomDropdown(
                 label: "Gender",
-                items: const ["Male", "Female", "Other"],
+                items: const ["Male", "Female"],
                 onChanged: (value) => provider.gender = value,
               ),
               const SizedBox(height: 25),
-              CustomTextField(
+              PasswordField(
                 label: "Password",
-                obscureText: true,
                 onSaved: (value) => provider.password = value,
                 validator: (value) => provider.validatePassword(value),
+                primaryPasswordController: provider.passwordController,
               ),
-              const SizedBox(height: 25),
-              CustomTextField(
+              const SizedBox(height: 20),
+              PasswordField(
                 label: "Confirm Password",
-                obscureText: true,
-                onSaved: (value) => provider.password = value,
+                onSaved: (value) => provider.confirmPassword = value,
                 validator: (value) => provider.validateConfirmPassword(value),
+                isConfirmPassword: true,
+                primaryPasswordController: provider.passwordController,
               ),
             ],
           ),
