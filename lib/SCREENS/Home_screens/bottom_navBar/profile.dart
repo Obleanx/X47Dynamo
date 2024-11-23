@@ -66,37 +66,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  void _onChangeProfilePicture() {
-    _mediaService.showImageSourceBottomSheet(
+// Check if user is authenticated before upload
+  void _onChangeProfilePicture() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in first')),
+      );
+      return;
+    }
+
+    _mediaService.showImageSourceDialog(
       context: context,
       onImageSelected: (File? image) async {
         if (image != null) {
-          // Upload image to Firebase Storage
-          final uploadedImageUrl = await _mediaService.uploadImage(
-            imageFile: image,
-            context: context,
-          );
+          try {
+            final uploadedImageUrl = await _mediaService.uploadImage(
+              imageFile: image,
+              context: context,
+            );
 
-          // Update user profile in Firestore
-          if (uploadedImageUrl != null) {
-            try {
-              final user = _auth.currentUser;
-              if (user != null) {
-                await _firestore.collection('users').doc(user.uid).update({
-                  'profileImageUrl': uploadedImageUrl,
-                });
-
-                setState(() {
-                  _profileImage = image;
-                  _profileImageUrl = uploadedImageUrl;
-                });
-              }
-            } catch (e) {
-              // ignore: use_build_context_synchronously
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error updating profile picture: $e')),
-              );
+            if (uploadedImageUrl != null) {
+              // Handle successful upload
+              setState(() {
+                _profileImageUrl = uploadedImageUrl;
+              });
             }
+          } catch (e) {
+            if (kDebugMode) {
+              print('Error in _onChangeProfilePicture: $e');
+            } // Debug print
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error updating profile picture: $e')),
+            );
           }
         }
       },
