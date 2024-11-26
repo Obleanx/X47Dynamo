@@ -4,7 +4,7 @@ import 'dart:ui';
 class PostContainer extends StatefulWidget {
   final Map<String, dynamic> post;
 
-  const PostContainer({Key? key, required this.post}) : super(key: key);
+  const PostContainer({super.key, required this.post});
 
   @override
   State<PostContainer> createState() => _PostContainerState();
@@ -26,7 +26,9 @@ class _PostContainerState extends State<PostContainer> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.grey.withOpacity(0.2)),
+              border: Border.all(
+                color: Colors.grey.withOpacity(0.2),
+              ),
             ),
             child: Padding(
               padding: const EdgeInsets.all(10.0),

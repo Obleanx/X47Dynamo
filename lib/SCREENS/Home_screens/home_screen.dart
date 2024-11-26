@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:kakra/providers/home_provider.dart';
 import 'Town square/town_square_post_container.dart';
 
-// Now update the HomeScreen to pass both providers
+// HomeScreen to passes both providers
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 

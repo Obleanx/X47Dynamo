@@ -7,11 +7,13 @@ import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import 'package:kakra/PROVIDERS/messages_provider.dart';
 import 'package:kakra/PROVIDERS/onboarding_provider.dart';
 import 'package:kakra/PROVIDERS/product_description_provider.dart';
+import 'package:kakra/PROVIDERS/profile_provider.dart';
 import 'package:kakra/PROVIDERS/sellerlisting_provider.dart';
 import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
 import 'package:kakra/SCREENS/Home_screens/bottom_navBar/messages.dart';
 import 'package:kakra/SCREENS/Home_screens/bottom_navBar/profile.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
+import 'package:kakra/SCREENS/Home_screens/post/creating_post.dart';
 import 'package:kakra/SCREENS/all_onboarding_screens.dart';
 import 'package:kakra/SCREENS/welcom_screen.dart';
 import 'package:kakra/SERVICES/options.dart';
@@ -24,6 +26,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(
     MultiProvider(
       providers: [
@@ -37,6 +40,9 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => CategoriesProvider()),
         ChangeNotifierProvider(create: (_) => ListingProvider()),
         ChangeNotifierProvider(create: (context) => ProductProvider4()),
+        ChangeNotifierProvider(
+          create: (context) => ProfileProvider()..initializeProfile(),
+        ),
       ],
       child: const MyApp(),
     ),
@@ -48,6 +54,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Ensure profile data is loaded when app starts
+    Future.microtask(() {
+      context.read<ProfileProvider>().fetchUserData();
+    });
+
     return MaterialApp(
       title: 'Kakra App',
       debugShowCheckedModeBanner: false,
@@ -56,7 +67,6 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.montserratTextTheme(
           Theme.of(context).textTheme,
         ),
-        // Add these theme settings for consistent colors
         primaryColor: const Color(0xFF2486C2),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF2486C2),
@@ -70,6 +80,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/messages': (context) => const ChatMessageScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/create-post': (context) => PostCreationScreen(),
       },
     );
   }

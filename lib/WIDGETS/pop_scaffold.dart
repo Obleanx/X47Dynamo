@@ -39,6 +39,8 @@ class CreateModal extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             // Handle icon tap
+                            Navigator.pushNamed(context, '/create-post');
+
                             print('Create post icon tapped');
                           },
                           child: Container(
@@ -61,7 +63,7 @@ class CreateModal extends StatelessWidget {
                             children: [
                               InkWell(
                                 onTap: () {
-                                  // Handle text tap
+                                  Navigator.pushNamed(context, '/create-post');
                                   print('Create post text tapped');
                                 },
                                 child: const Text(

@@ -137,7 +137,7 @@ class RegistrationProvider extends ChangeNotifier {
   void createFirstAccount(BuildContext context) {
     if (formKey.currentState!.validate()) {
       formKey.currentState!.save();
-      // Here i would typically send the data to your backend
+      // Here you would typically send the data to the backend
       if (kDebugMode) {
         print('Creating account with:');
         print('First Name: $firstName');

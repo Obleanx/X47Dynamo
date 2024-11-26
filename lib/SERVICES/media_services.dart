@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kakra/PROVIDERS/profile_provider.dart';
+import 'package:provider/provider.dart';
 
 enum ImageSourceType {
   camera,
@@ -15,67 +17,91 @@ class MediaService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Add the missing _showErrorSnackBar method
+  void _showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
+  }
+
+  // Add the missing pickImage method
   Future<File?> pickImage({
     required ImageSourceType source,
     required BuildContext context,
     int? imageQuality,
-    bool cropImage = false,
   }) async {
     try {
-      XFile? pickedFile;
-
-      if (source == ImageSourceType.camera) {
-        pickedFile = await _picker.pickImage(
-          source: ImageSource.camera,
-          imageQuality: imageQuality ?? 100, // Increased to maximum quality
-          preferredCameraDevice:
-              CameraDevice.rear, // Using rear camera for better quality
-          maxWidth: 2048, // Maximum width for high quality
-          maxHeight: 2048, // Maximum height for high quality
-        );
-      } else {
-        pickedFile = await _picker.pickImage(
-          source: ImageSource.gallery,
-          imageQuality: imageQuality ?? 100, // Increased to maximum quality
-          maxWidth: 2048, // Maximum width for high quality
-          maxHeight: 2048, // Maximum height for high quality
-        );
-      }
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source == ImageSourceType.camera
+            ? ImageSource.camera
+            : ImageSource.gallery,
+        imageQuality: imageQuality ?? 100,
+      );
 
       if (pickedFile == null) return null;
 
       return File(pickedFile.path);
     } catch (e) {
+      if (kDebugMode) {
+        print('Error picking image: $e');
+      }
       _showErrorSnackBar(context, 'Error picking image: ${e.toString()}');
       return null;
     }
   }
 
-  // Added uploadImage method
+  // Existing deletePreviousProfilePicture method
+  Future<void> deletePreviousProfilePicture(String userId) async {
+    try {
+      final ListResult result = await _storage
+          .ref()
+          .child('profile_pictures')
+          .child(userId)
+          .listAll();
+
+      for (var item in result.items) {
+        await item.delete();
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting previous profile picture: $e');
+      }
+    }
+  }
+
+  // Existing uploadImage method
   Future<String?> uploadImage({
     required File imageFile,
     required BuildContext context,
     String? customPath,
   }) async {
+    final provider = Provider.of<ProfileProvider>(context, listen: false);
+    provider.setLoading(true);
+
     try {
-      // Get current user
       final user = _auth.currentUser;
       if (user == null) {
         _showErrorSnackBar(context, 'User not logged in');
         return null;
       }
 
-      // Generate unique filename
+      await deletePreviousProfilePicture(user.uid);
+
       String fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      // Create storage reference with user-specific path
       final storageRef = _storage
           .ref()
           .child('profile_pictures')
           .child(user.uid)
           .child(fileName);
 
-      // Create upload task
       final uploadTask = await storageRef.putFile(
         imageFile,
         SettableMetadata(
@@ -88,32 +114,25 @@ class MediaService {
       );
 
       if (uploadTask.state == TaskState.success) {
-        // Get download URL
         final downloadURL = await storageRef.getDownloadURL();
+        provider.setProfileImageUrl(downloadURL);
+        provider.setLoading(false);
         return downloadURL;
       }
 
+      provider.setLoading(false);
       return null;
     } catch (e) {
       if (kDebugMode) {
         print('Upload error: $e');
-      } // Debug print
+      }
+      provider.setLoading(false);
       _showErrorSnackBar(context, 'Error uploading image: ${e.toString()}');
       return null;
     }
   }
 
-  // Show error snackbar
-  void _showErrorSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-      ),
-    );
-  }
-
-// Show image source dialog on the screen
+  // Existing showImageSourceDialog method
   Future<void> showImageSourceDialog({
     required BuildContext context,
     required Function(File?) onImageSelected,

@@ -83,5 +83,55 @@ class HomeProvider extends ChangeNotifier {
     _selectedCategoryIndex = index;
     notifyListeners();
   }
+
+  //this methods fetches the newest post of all registered users... the careful here shey you de hear me!
+  void addNewPost({
+    required String content,
+    String? imagePath,
+    String? location,
+  }) {
+    // You can replace these with actual user data from authentication
+    String userName = 'Current User';
+    String userAvatar = 'lib/images/default_avatar.png';
+    String group = 'Local Group';
+
+    // Create a new post
+    Map<String, dynamic> newPost = {
+      'avatar': userAvatar,
+      'name': userName,
+      'group': group,
+      'content': content,
+      'time': _formatCurrentTime(),
+    };
+
+    // Add image if available
+    if (imagePath != null) {
+      newPost['image'] = imagePath;
+    }
+
+    // Add location if available
+    if (location != null) {
+      newPost['location'] = location;
+    }
+
+    // Add the new post to the beginning of the list
+    posts.insert(0, newPost);
+    notifyListeners();
+  }
+
+  String _formatCurrentTime() {
+    DateTime now = DateTime.now();
+    Duration difference = DateTime.now().difference(now);
+
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
+      return '${difference.inMinutes} min ago';
+    } else if (difference.inHours < 24) {
+      return '${difference.inHours} h ago';
+    } else {
+      return '${difference.inDays} d ago';
+    }
+  }
   // Add more methods as needed
 }
