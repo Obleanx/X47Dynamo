@@ -3,47 +3,54 @@ import 'package:flutter/material.dart';
 class ChatProvider extends ChangeNotifier {
   final List<ChatMessage> _messages = [
     ChatMessage(
-      text: 'Hey, how are you?',
+      text: 'Hey, did you find the entrance to the pyramid?',
       isSentByUser: false,
     ),
     ChatMessage(
-      text: 'I\'m doing great, thanks for asking!',
+      text: 'Yes, and you won’t believe it—it’s guarded by a giant sphinx!',
       isSentByUser: true,
     ),
     ChatMessage(
-      text: 'Are we still on for the meeting today?',
+      text: 'What does the sphinx say? Is it another riddle?',
       isSentByUser: false,
     ),
     ChatMessage(
-      text: 'Yes, definitely. I\'ll send you the details later.',
+      text:
+          'Exactly. “What walks on four legs in the morning, two at noon, and three in the evening.” Classic!',
       isSentByUser: true,
     ),
     ChatMessage(
-      text: 'Sounds good. Looking forward to it!',
+      text: 'That’s easy. Did you solve it?',
       isSentByUser: false,
     ),
     ChatMessage(
-      text: 'Me too. Have a great rest of your day!',
+      text: 'Of course! The door opened, but it’s pitch dark inside.',
       isSentByUser: true,
     ),
     ChatMessage(
-      text: 'You too, bye!',
+      text: 'Don’t go alone! Did you find a torch?',
       isSentByUser: false,
     ),
     ChatMessage(
-      text: 'Hey, did you get the report I sent?',
-      isSentByUser: false,
-    ),
-    ChatMessage(
-      text: 'Yes, I just finished reviewing it. Great work!',
+      text:
+          'Yes, but it keeps flickering. The walls are covered in hieroglyphics!',
       isSentByUser: true,
     ),
     ChatMessage(
-      text: 'Glad you liked it. Let me know if you need anything else.',
+      text: 'Can you read them? What do they say?',
       isSentByUser: false,
     ),
     ChatMessage(
-      text: 'Will do, thanks!',
+      text:
+          'It’s a warning: “Disturb the Pharaoh, and the sands will swallow you.”',
+      isSentByUser: true,
+    ),
+    ChatMessage(
+      text: 'Creepy. Do you think the treasure is real?',
+      isSentByUser: false,
+    ),
+    ChatMessage(
+      text: 'Only one way to find out. I’m going deeper!',
       isSentByUser: true,
     ),
   ];

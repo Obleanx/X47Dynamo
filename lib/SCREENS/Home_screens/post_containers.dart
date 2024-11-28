@@ -37,8 +37,13 @@ class _PostContainerState extends State<PostContainer> {
                 children: [
                   Row(
                     children: [
+                      // Use network image or fallback to asset
                       CircleAvatar(
-                        backgroundImage: AssetImage(widget.post['avatar']),
+                        backgroundImage:
+                            widget.post['avatar'].startsWith('http')
+                                ? NetworkImage(widget.post['avatar'])
+                                : AssetImage(widget.post['avatar'])
+                                    as ImageProvider,
                       ),
                       const SizedBox(width: 10),
                       Expanded(

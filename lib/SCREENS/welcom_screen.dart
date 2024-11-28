@@ -13,7 +13,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.initState();
 
     // Start a timer to navigate after 10 seconds
-    Timer(const Duration(seconds: 10), () {
+    Timer(const Duration(seconds: 20), () {
       // Navigate to the OnboardingScreen after 10 seconds
       Navigator.pushReplacement(
         context,
@@ -37,7 +37,33 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
           ),
         ),
         child: Center(
-          child: Image.asset('lib/images/kk4.png'), // Your app image
+          child: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5), // Shadow color
+                  blurRadius: 20, // Shadow blur
+                  spreadRadius: 5, // Shadow spread
+                  offset: Offset(0, 10), // Shadow position
+                ),
+              ],
+              borderRadius:
+                  BorderRadius.circular(15), // Optional rounded corners
+              border: Border.all(
+                color: Colors.white, // Border color
+                width: 3, // Border width
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.asset(
+                'lib/images/kk4.png', // Your app image
+                fit: BoxFit.contain, // Scale the image proportionally
+                width: MediaQuery.of(context).size.width *
+                    0.8, // 80% of screen width
+              ),
+            ),
+          ),
         ),
       ),
     );

@@ -149,10 +149,13 @@ class TheOnboardingPage extends StatelessWidget {
       children: [
         Image.asset(image, height: 200),
         const SizedBox(height: 20),
-        Text(
-          title,
-          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            title,
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
         ),
         const SizedBox(height: 10),
         Padding(

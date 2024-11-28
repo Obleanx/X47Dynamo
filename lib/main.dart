@@ -6,10 +6,12 @@ import 'package:kakra/PROVIDERS/home_provider.dart';
 import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import 'package:kakra/PROVIDERS/messages_provider.dart';
 import 'package:kakra/PROVIDERS/onboarding_provider.dart';
+import 'package:kakra/PROVIDERS/posting_provider.dart';
 import 'package:kakra/PROVIDERS/product_description_provider.dart';
 import 'package:kakra/PROVIDERS/profile_provider.dart';
 import 'package:kakra/PROVIDERS/sellerlisting_provider.dart';
 import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
+import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
 import 'package:kakra/SCREENS/Home_screens/bottom_navBar/messages.dart';
 import 'package:kakra/SCREENS/Home_screens/bottom_navBar/profile.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
@@ -43,6 +45,9 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (context) => ProfileProvider()..initializeProfile(),
         ),
+        ChangeNotifierProvider(create: (_) => PostProvider()),
+        ChangeNotifierProvider(create: (_) => PostProvider2()),
+        // Add this line
       ],
       child: const MyApp(),
     ),

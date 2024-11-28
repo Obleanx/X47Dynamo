@@ -60,7 +60,8 @@ class ChatMessageProvider extends ChangeNotifier {
     _messages = [
       ChatMessage(
         userName: 'Paul Walker',
-        message: 'This is perfect',
+        message:
+            'I found a hidden passage in the Great Pyramid. Who’s in for an adventure?',
         time: '12:34 PM',
         unreadCount: 2,
         avatarAsset:
@@ -69,7 +70,8 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Alice Johnson',
-        message: 'Hey, how have you been?',
+        message:
+            'The hieroglyphics say “Beware of the sandstorm.” Creepy, right?',
         time: '9:15 AM',
         unreadCount: 3,
         avatarAsset:
@@ -78,7 +80,8 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Michael Brown',
-        message: 'Sure, I’ll get back to you later.',
+        message:
+            'I swear I saw a shadow move inside the tomb. Are we alone here?',
         time: '10:50 AM',
         avatarAsset:
             'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
@@ -87,7 +90,8 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Sophia Garcia',
-        message: 'Can you send over the report?',
+        message:
+            'I’m dusting off an ancient scroll. Looks like it’s a treasure map!',
         time: '11:25 AM',
         unreadCount: 3,
         avatarAsset:
@@ -96,7 +100,7 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'James Wilson',
-        message: 'Great job on the project!',
+        message: 'I accidentally triggered a trap... the floor is moving!',
         time: 'Yesterday',
         unreadCount: 1,
         avatarAsset:
@@ -105,7 +109,7 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Olivia Martin',
-        message: 'Looking forward to the weekend.',
+        message: 'The golden scarab artifact is glowing. What does it mean?!',
         time: 'Yesterday',
         avatarAsset:
             'lib/images/${_avatarImages[_random.nextInt(_avatarImages.length)]}',
@@ -114,7 +118,7 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Liam Rodriguez',
-        message: 'Let’s catch up soon!',
+        message: 'I found the Pharaoh’s chamber. It’s breathtaking!',
         time: '2 days ago',
         unreadCount: 4,
         avatarAsset:
@@ -123,7 +127,7 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Emily Clark',
-        message: 'I’ll send the details shortly.',
+        message: 'Beware of the Sphinx’s riddle—it’s trickier than it looks.',
         time: '3 days ago',
         unreadCount: 6,
         avatarAsset:
@@ -132,7 +136,7 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Benjamin Scott',
-        message: 'Good morning! How are you?',
+        message: 'The sandstorm is coming... we need to get out of here!',
         time: '12:34 PM',
         unreadCount: 0,
         avatarAsset:
@@ -141,7 +145,7 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Ava Moore',
-        message: 'I’ll be there in 10 minutes.',
+        message: 'The Pyramid’s entrance just sealed itself! What now?!',
         time: '5 days ago',
         unreadCount: 2,
         avatarAsset:
@@ -150,7 +154,7 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Ethan Lee',
-        message: 'See you at the event!',
+        message: 'I found a sarcophagus... do we open it?',
         time: '6 days ago',
         unreadCount: 0,
         avatarAsset:
@@ -159,7 +163,8 @@ class ChatMessageProvider extends ChangeNotifier {
       ),
       ChatMessage(
         userName: 'Isabella King',
-        message: 'Thanks for the help!',
+        message:
+            'The amulet fits into the wall carving... it’s opening something!',
         time: '9:15 AM',
         unreadCount: 1,
         avatarAsset:

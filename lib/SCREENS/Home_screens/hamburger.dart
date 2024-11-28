@@ -1,7 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kakra/PROVIDERS/profile_provider.dart';
 import 'dart:ui';
-
-import 'package:kakra/SCREENS/Home_screens/home_screen.dart'; // Import for BackdropFilter
+import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
+import 'package:provider/provider.dart';
 
 class Hamburger extends StatelessWidget {
   const Hamburger({super.key});
@@ -23,40 +27,62 @@ class Hamburger extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
               ),
             ),
-            title: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 25,
-                  backgroundImage: AssetImage('lib/images/kr5.png'),
-                ),
-                const SizedBox(width: 5),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            title: Consumer<ProfileProvider>(
+              builder: (context, profileProvider, child) {
+                final user = FirebaseAuth.instance.currentUser;
+                final profileImageUrl = profileProvider.profileImageUrl;
+                final firstName = profileProvider.firstName ?? 'User';
+                final lastName = profileProvider.lastName ?? '';
+
+                if (profileProvider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                return Row(
                   children: [
-                    Text(
-                      'Fola ojo',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                    CircleAvatar(
+                      radius: 25,
+                      backgroundColor: Colors.grey[200],
+                      backgroundImage:
+                          profileImageUrl != null && profileImageUrl.isNotEmpty
+                              ? CachedNetworkImageProvider(profileImageUrl)
+                              : const AssetImage('lib/images/kr5.png')
+                                  as ImageProvider,
+                      child: profileImageUrl == null || profileImageUrl.isEmpty
+                          ? Icon(Icons.person, color: Colors.grey[400])
+                          : null,
                     ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Edit your profile',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey,
-                      ),
+                    const SizedBox(width: 5),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          '$firstName ${lastName.isNotEmpty ? lastName : ''}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        const Text(
+                          'Edit your profile',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 40),
+                    IconButton(
+                      icon: const Icon(Icons.settings_outlined),
+                      onPressed: () {},
                     ),
                   ],
-                ),
-                const SizedBox(width: 70),
-                IconButton(
-                  icon: const Icon(Icons.settings_outlined),
-                  onPressed: () {},
-                ),
-              ],
+                );
+              },
             ),
           ),
           body: Padding(
@@ -66,7 +92,6 @@ class Hamburger extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Shortcuts Section
                   const Text(
                     'Your shortcut',
                     style: TextStyle(
@@ -124,7 +149,6 @@ class Hamburger extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 70),
-
                   // Menu Items - Redesigned as grid
                   Wrap(
                     spacing: 16,
@@ -150,12 +174,21 @@ class Hamburger extends StatelessWidget {
                         color: Colors.black),
                   ),
                   const SizedBox(height: 12),
-                  _buildSocialButton(context, 'Facebook', Icons.facebook),
+                  _buildSocialButton(
+                      context, 'Facebook', FontAwesomeIcons.facebook),
                   const SizedBox(height: 20),
-                  _buildSocialButton(context, 'Twitter', Icons.tiktok),
+                  // _buildSocialButton(
+                  // context, 'Twitter', FontAwesomeIcons.twitter),
+                  _buildSocialButton(context, 'LinkedIn',
+                      FontAwesomeIcons.linkedin), // LinkedIn button
+                  const SizedBox(height: 20),
+
+                  _buildSocialButton(
+                      context, 'WhatsApp', FontAwesomeIcons.whatsapp),
+
                   const SizedBox(height: 20),
                   _buildSocialButton(
-                      context, 'WhatsApp', Icons.facebook_outlined),
+                      context, 'X', FontAwesomeIcons.xTwitter), // Updated for X
                 ],
               ),
             ),
@@ -210,6 +243,17 @@ class Hamburger extends StatelessWidget {
 
   Widget _buildSocialButton(
       BuildContext context, String platform, IconData icon) {
+    // Map platform names to their branded colors
+    final Map<String, Color> platformColors = {
+      'Facebook': const Color(0xFF1877F2), // Facebook blue
+      'X': Colors.black, // X branding uses black
+      'WhatsApp': const Color(0xFF25D366), // WhatsApp green
+      'LinkedIn': const Color(0xFF0077B5), // LinkedIn blue
+    };
+
+    // Get the color for the platform, or default to grey
+    final Color iconColor = platformColors[platform] ?? Colors.grey;
+
     return Container(
       width: MediaQuery.of(context).size.width,
       height: 56, // Fixed height for consistency
@@ -231,7 +275,7 @@ class Hamburger extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Icon(icon, size: 24, color: Colors.blue),
+          Icon(icon, size: 24, color: iconColor), // Icon with branded color
           const SizedBox(width: 10),
           Text(
             platform,

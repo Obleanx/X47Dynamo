@@ -125,6 +125,7 @@ class _PasswordFieldState extends State<PasswordField> {
   final TextEditingController _controller = TextEditingController();
   bool _showPassword = false;
   String? _errorText;
+  String _password = '';
 
   @override
   Widget build(BuildContext context) {
@@ -181,6 +182,7 @@ class _PasswordFieldState extends State<PasswordField> {
             onChanged: (value) {
               setState(() {
                 _errorText = widget.validator?.call(value);
+                _password = value;
               });
             },
           ),
@@ -196,6 +198,93 @@ class _PasswordFieldState extends State<PasswordField> {
               ),
             ),
           ),
+        if (!widget.isConfirmPassword && _password.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: PasswordValidator(password: _password),
+          ),
+      ],
+    );
+  }
+}
+
+class PasswordValidator extends StatelessWidget {
+  final String password;
+
+  const PasswordValidator({super.key, required this.password});
+
+  bool _hasThreeCharacters(String password) {
+    return password.length >= 4;
+  }
+
+  bool _hasUpperCase(String password) {
+    return password.contains(RegExp(r'[A-Z]'));
+  }
+
+  bool _hasLowerCase(String password) {
+    return password.contains(RegExp(r'[a-z]'));
+  }
+
+  bool _hasSpecialCharacter(String password) {
+    return password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+  }
+
+  Widget _buildValidationIndicator(
+      {required bool isValid, required String text}) {
+    return Row(
+      children: [
+        Container(
+          width: 15,
+          height: 15,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isValid ? Colors.green : Colors.red,
+          ),
+          child: Center(
+            child: Icon(
+              isValid ? Icons.check : Icons.close,
+              color: Colors.white,
+              size: 12,
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          text,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 12,
+            color: isValid ? Colors.green : Colors.red,
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildValidationIndicator(
+          isValid: _hasThreeCharacters(password),
+          text: 'At least 4 characters',
+        ),
+        const SizedBox(height: 10),
+        _buildValidationIndicator(
+          isValid: _hasUpperCase(password),
+          text: '1 upper case letter',
+        ),
+        const SizedBox(height: 10),
+        _buildValidationIndicator(
+          isValid: _hasLowerCase(password),
+          text: '1 lower case letter',
+        ),
+        const SizedBox(height: 10),
+        _buildValidationIndicator(
+          isValid: _hasSpecialCharacter(password),
+          text: '1 special character',
+        ),
       ],
     );
   }

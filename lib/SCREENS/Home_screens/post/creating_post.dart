@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -49,6 +51,7 @@ class PostCreationScreen extends StatelessWidget {
 
   PostCreationScreen({super.key});
 
+  //gets the users current location and adds it to the backennd
   Future<String?> _getCurrentLocation() async {
     try {
       // Request location permissions
@@ -64,7 +67,22 @@ class PostCreationScreen extends StatelessWidget {
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        return '${place.locality}, ${place.administrativeArea}';
+        String locationString =
+            '${place.locality}, ${place.administrativeArea}';
+
+        // Save location to Firestore for the current user
+        final user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .update({
+            'location': locationString,
+            'lastLocationUpdated': FieldValue.serverTimestamp(),
+          });
+        }
+
+        return locationString;
       }
       return null;
     } catch (e) {
@@ -150,21 +168,21 @@ class PostCreationScreen extends StatelessWidget {
                               child: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.2),
+                                  // color: Colors.grey.withOpacity(0.2),//
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(Icons.camera_alt,
                                     color: Colors.grey),
                               ),
                             ),
-                            const SizedBox(width: 16),
+                            //const SizedBox(width: 10),
                             GestureDetector(
                               onTap: () =>
                                   _pickImage(context, postProvider, true),
                               child: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.2),
+                                  //color: Colors.grey.withOpacity(0.2)//,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: const Icon(Icons.photo_library,

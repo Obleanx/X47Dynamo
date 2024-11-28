@@ -22,9 +22,13 @@ class CustomDropdown extends StatelessWidget {
       child: DropdownButtonFormField<String>(
         decoration: InputDecoration(
           labelText: label,
+          labelStyle: const TextStyle(
+            fontSize: 14,
+            color: Colors.black,
+          ),
           border: InputBorder.none,
           contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         ),
         items: items.map((String value) {
           return DropdownMenuItem<String>(

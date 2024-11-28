@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kakra/SCREENS/Auth_screens/forgot_password.dart';
+import 'package:kakra/SCREENS/Auth_screens/create_newpassword.dart';
 import 'package:kakra/WIDGETS/kakra_button2.dart';
 import 'package:provider/provider.dart';
 import 'package:kakra/PROVIDERS/auth_provider.dart';
@@ -107,8 +107,7 @@ class SignUpScreen extends StatelessWidget {
                       // ),
                     ] else ...[
                       Form(
-                        key:
-                            _formKey, // Use the GlobalKey<FormState> you've already defined
+                        key: _formKey,
                         child: Column(
                           children: [
                             const Center(
@@ -144,7 +143,7 @@ class SignUpScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const ForgotPasswordScreen()),
+                                            const CreatePasswordScreen()),
                                   );
                                 },
                                 child: const Text(
