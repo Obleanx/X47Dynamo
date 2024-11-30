@@ -1,22 +1,23 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 
-// Post Provider
 class PostProvider with ChangeNotifier {
   String _content = '';
   String _location = '';
   String? _imagePath;
   bool _isLoading = false;
 
+  // Getters
   String get content => _content;
   String get location => _location;
   String? get imagePath => _imagePath;
   bool get isLoading => _isLoading;
 
+  // Setters
   void setContent(String value) {
     _content = value;
     notifyListeners();
@@ -37,10 +38,17 @@ class PostProvider with ChangeNotifier {
     notifyListeners();
   }
 
-// post fetching method from the database.
-  Future<void> createPost({BuildContext? context}) async {
-    setLoading(true);
+  // Create Post Method
+  Future<void> createPost(
+      BuildContext scaffoldContext, BuildContext navigationContext) async {
+    if (_content.trim().isEmpty) {
+      return;
+    }
+
     try {
+      // Set loading state
+      setLoading(true);
+
       String? imageUrl;
       final user = FirebaseAuth.instance.currentUser;
 
@@ -54,7 +62,6 @@ class PostProvider with ChangeNotifier {
           .doc(user.uid)
           .get();
 
-      // Get user's first name
       String userName = userDoc.data()?['firstName'] ?? 'Anonymous';
 
       // Upload post image if exists
@@ -73,10 +80,9 @@ class PostProvider with ChangeNotifier {
       String? userLocation = userDoc.data()?['location'];
 
       // Create post in Firestore
-      final postRef = await FirebaseFirestore.instance.collection('posts').add({
+      await FirebaseFirestore.instance.collection('posts').add({
         'content': _content,
-        'location':
-            userLocation ?? _location, // Use saved location or current input
+        'location': userLocation ?? _location,
         'imageUrl': imageUrl,
         'timestamp': FieldValue.serverTimestamp(),
         'userId': user.uid,
@@ -87,13 +93,19 @@ class PostProvider with ChangeNotifier {
       _content = '';
       _location = '';
       _imagePath = null;
+      notifyListeners();
+
+      // Navigate to home screen after post creation
+      if (navigationContext.mounted) {
+        Navigator.pushReplacementNamed(navigationContext, '/home');
+      }
     } catch (e) {
       if (kDebugMode) {
         print('Error creating post: $e');
       }
     } finally {
+      // Reset loading state
       setLoading(false);
-      notifyListeners();
     }
   }
 }

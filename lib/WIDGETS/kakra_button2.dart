@@ -35,9 +35,17 @@ class KakraButton2 extends StatelessWidget {
           elevation: 0,
         ),
         onPressed: isLoading ? null : onPressed,
-        child: isLoading == true
-            ? const CircularProgressIndicator(color: Colors.white)
-            : child,
+        child: SizedBox(
+          height: 20, // Fixed height for consistent button size
+          child: Center(
+            child: isLoading
+                ? const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  )
+                : child,
+          ),
+        ),
       ),
     );
   }

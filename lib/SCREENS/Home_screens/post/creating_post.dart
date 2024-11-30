@@ -1,21 +1,23 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
-import 'package:kakra/PROVIDERS/home_provider.dart';
-import 'package:kakra/PROVIDERS/posting_provider.dart';
-import 'package:kakra/WIDGETS/kakra_button2.dart';
 import 'package:provider/provider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:kakra/CORE/constants.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:kakra/WIDGETS/kakra_button2.dart';
+import 'package:kakra/PROVIDERS/home_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kakra/PROVIDERS/posting_provider.dart';
 
 // post_screen.dart
 // Custom Expandable App Bar
+
 class CustomExpandableAppBar extends StatelessWidget {
-  const CustomExpandableAppBar({super.key});
+  CustomExpandableAppBar({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -134,14 +136,14 @@ class PostCreationScreen extends StatelessWidget {
           builder: (context, postProvider, child) {
             return Column(
               children: [
-                const CustomExpandableAppBar(),
+                CustomExpandableAppBar(),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Text Input Field
+                        // Text Input Field for post contents.
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -276,19 +278,50 @@ class PostCreationScreen extends StatelessWidget {
                         SafeArea(
                           child: Padding(
                             padding: const EdgeInsets.all(16),
-                            child: KakraButton2(
-                              onPressed: postProvider.isLoading
-                                  ? null
-                                  : () => postProvider.createPost(),
-                              isLoading: postProvider.isLoading,
-                              child: Center(
+                            child: Center(
+                              child: ElevatedButton(
+                                onPressed: postProvider.isLoading
+                                    ? null // Disable button while loading
+                                    : () async {
+                                        if (postProvider.content
+                                            .trim()
+                                            .isEmpty) {
+                                          // Show dialog if content is empty
+                                          showContentRequiredDialog(context);
+                                        } else {
+                                          // Call createPost and navigate to home
+                                          await postProvider.createPost(
+                                              context, context);
+                                        }
+                                      },
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 80, vertical: 10),
+                                  backgroundColor: postProvider.isLoading
+                                      ? Colors.grey
+                                      : AppColors.primary,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  minimumSize: const Size(200,
+                                      50), // Set a fixed minimum width and height
+                                ),
                                 child: postProvider.isLoading
-                                    ? const CircularProgressIndicator()
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
                                     : const Text(
                                         'Create Post',
                                         style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                               ),
                             ),
@@ -303,6 +336,85 @@ class PostCreationScreen extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  // Show Validation Dialog
+  void showContentRequiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 2,
+                  blurRadius: 7,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'lib/images/kk4.png', // Ensure this asset exists
+                  height: 100,
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Oops! Something\'s Missing',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'You need to write something before creating a post. Share your thoughts, feelings, or an update!',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 15),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 12),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text(
+                    'Got It',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

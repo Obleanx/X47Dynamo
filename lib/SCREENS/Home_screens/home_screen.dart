@@ -1,18 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
-import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
-import 'package:kakra/SCREENS/Displaying_POsts/post_container2.dart';
-import 'package:kakra/SCREENS/Home_screens/bottom_navBar/bottom_navigation.dart';
-import 'package:kakra/WIDGETS/home_screen_widgets/blur_screen.dart';
-import 'package:kakra/WIDGETS/home_screen_widgets/category_slider.dart';
-import 'package:kakra/SCREENS/Home_screens/appbar.dart';
-import 'package:kakra/SCREENS/Home_screens/post_containers.dart';
-import 'package:kakra/WIDGETS/home_screen_widgets/shazam_likebutton.dart';
-import 'package:kakra/WIDGETS/home_screen_widgets/welcom_texts.dart';
 import 'package:provider/provider.dart';
 import 'package:kakra/providers/home_provider.dart';
 import 'Town square/town_square_post_container.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kakra/SCREENS/Home_screens/appbar.dart';
+import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
+import 'package:kakra/SCREENS/Home_screens/post_containers.dart';
+import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
+import 'package:kakra/WIDGETS/home_screen_widgets/blur_screen.dart';
+import 'package:kakra/SCREENS/Displaying_POsts/post_container2.dart';
+import 'package:kakra/WIDGETS/home_screen_widgets/welcom_texts.dart';
+import 'package:kakra/WIDGETS/home_screen_widgets/category_slider.dart';
+import 'package:kakra/WIDGETS/home_screen_widgets/shazam_likebutton.dart';
+import 'package:kakra/SCREENS/Home_screens/bottom_navBar/bottom_navigation.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -46,6 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           const UserGreeting(),
                           const CategorySlider(),
+                          // Firebase Posts
+                          Consumer<PostProvider2>(
+                            builder: (context, postProvider, child) {
+                              return _buildFirebasePosts(postProvider);
+                            },
+                          ),
                           Consumer<HomeProvider>(
                             builder: (context, homeProvider, child) {
                               return ListView.builder(
@@ -60,12 +66,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                           post: homeProvider.posts[index]);
                                 },
                               );
-                            },
-                          ),
-                          // Firebase Posts
-                          Consumer<PostProvider2>(
-                            builder: (context, postProvider, child) {
-                              return _buildFirebasePosts(postProvider);
                             },
                           ),
                         ],

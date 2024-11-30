@@ -1,11 +1,11 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:kakra/PROVIDERS/profile_provider.dart';
 import 'dart:ui';
-import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kakra/PROVIDERS/profile_provider.dart';
+import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class Hamburger extends StatelessWidget {
   const Hamburger({super.key});
@@ -22,7 +22,7 @@ class Hamburger extends StatelessWidget {
             backgroundColor: Colors.white,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () => Navigator.pushReplacement(
+              onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
               ),

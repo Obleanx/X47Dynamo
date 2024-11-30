@@ -1,7 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
+import 'package:kakra/SCREENS/Home_screens/post/creating_post.dart';
+import 'package:kakra/SCREENS/Home_screens/Town%20square/town_square_screen.dart';
+import 'package:kakra/SCREENS/Home_screens/market%20place/market_home_screen.dart';
 
 class MenuOverlay extends StatelessWidget {
   const MenuOverlay({super.key});
@@ -40,7 +44,15 @@ class MenuOverlay extends StatelessWidget {
                     iconColor: const Color(0xFF2486C2),
                     onTap: () {
                       // Add your Post functionality here
-                      print('Post tapped');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => PostCreationScreen()),
+                      );
+
+                      if (kDebugMode) {
+                        print('Post tapped');
+                      }
                     },
                   ),
                   const SizedBox(height: 10),
@@ -59,8 +71,15 @@ class MenuOverlay extends StatelessWidget {
                     label: 'Town Square',
                     iconColor: const Color(0xFF2486C2),
                     onTap: () {
-                      // Add your Town Square functionality here
-                      print('Town Square tapped');
+                      // Add your Town Square functionality here //
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TownSquareScreen()),
+                      );
+                      if (kDebugMode) {
+                        print('Town Square tapped');
+                      }
                     },
                   ),
                   const SizedBox(height: 10),
@@ -70,7 +89,14 @@ class MenuOverlay extends StatelessWidget {
                     iconColor: const Color(0xFF2486C2),
                     onTap: () {
                       // Add your Market Place functionality here
-                      print('Market Place tapped');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MarketplaceContent()),
+                      );
+                      if (kDebugMode) {
+                        print('Market Place tapped');
+                      }
                     },
                   ),
                 ],

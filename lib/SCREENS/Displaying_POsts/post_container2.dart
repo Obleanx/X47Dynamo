@@ -1,8 +1,10 @@
 import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kakra/PROVIDERS/profile_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class PostContainer2 extends StatefulWidget {
@@ -81,37 +83,42 @@ class _PostContainer2State extends State<PostContainer2> {
     );
   }
 
+  // User Header with Profile Image
   Widget _buildUserHeader(BuildContext context) {
-    return Row(
-      children: [
-        CircleAvatar(
-          backgroundImage: widget.postData['userProfilePic'] != null
-              ? NetworkImage(widget.postData['userProfilePic'])
-              : const AssetImage('lib/images/fdp8.jpg') as ImageProvider,
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                widget.postData['userName'] ?? 'Anonymous',
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              Text(
-                widget.postData['location'] ?? '',
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-            ],
-          ),
-        ),
-        IconButton(
-          icon: const Icon(Icons.more_vert),
-          onPressed: () {
-            // TODO: Implement post options menu
-          },
-        ),
-      ],
+    return Consumer<ProfileProvider>(
+      builder: (context, profileProvider, child) {
+        final user = FirebaseAuth.instance.currentUser;
+        final profileImageUrl = profileProvider.profileImageUrl;
+
+        if (profileProvider.isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+
+        return Row(
+          children: [
+            // Profile Image
+            CircleAvatar(
+              radius: 20,
+              backgroundColor: Colors.grey[200],
+              backgroundImage: profileImageUrl != null &&
+                      profileImageUrl.isNotEmpty
+                  ? CachedNetworkImageProvider(profileImageUrl) as ImageProvider
+                  : const AssetImage('lib/images/kr5.png'),
+              child: profileImageUrl == null || profileImageUrl.isEmpty
+                  ? Icon(Icons.person, color: Colors.grey[400])
+                  : null,
+            ),
+            const SizedBox(width: 10),
+            // User Name (e.g., FirstName LastName)
+            Text(
+              '${profileProvider.firstName ?? ''} ',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        );
+      },
     );
   }
 
