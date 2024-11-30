@@ -19,11 +19,32 @@ class PostContainer2 extends StatefulWidget {
 class _PostContainer2State extends State<PostContainer2> {
   bool _isLiked = false;
   int _likeCount = 0;
+  String? _userLocation;
 
   @override
   void initState() {
     super.initState();
     _fetchLikeStatus();
+    _fetchUserLocation();
+  }
+
+  // Fetch location from Firebase (or another source)
+  Future<void> _fetchUserLocation() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      try {
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        setState(() {
+          _userLocation = userDoc[
+              'location']; // Assuming location field exists in Firestore
+        });
+      } catch (e) {
+        print('Error fetching user location: $e');
+      }
+    }
   }
 
   @override
@@ -89,6 +110,8 @@ class _PostContainer2State extends State<PostContainer2> {
       builder: (context, profileProvider, child) {
         final user = FirebaseAuth.instance.currentUser;
         final profileImageUrl = profileProvider.profileImageUrl;
+        final location =
+            _userLocation ?? 'Unknown Location'; // Use _userLocation here
 
         if (profileProvider.isLoading) {
           return const Center(
@@ -112,9 +135,19 @@ class _PostContainer2State extends State<PostContainer2> {
             ),
             const SizedBox(width: 10),
             // User Name (e.g., FirstName LastName)
-            Text(
-              '${profileProvider.firstName ?? ''} ',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+            // User Name and Location
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${profileProvider.firstName ?? ''} ',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  location, // Display user's location
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ],
             ),
           ],
         );
