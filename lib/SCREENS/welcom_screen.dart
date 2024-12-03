@@ -13,7 +13,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.initState();
 
     // Start a timer to navigate after 10 seconds
-    Timer(const Duration(seconds: 20), () {
+    Timer(const Duration(seconds: 5), () {
       // Navigate to the OnboardingScreen after 10 seconds
       Navigator.pushReplacement(
         context,

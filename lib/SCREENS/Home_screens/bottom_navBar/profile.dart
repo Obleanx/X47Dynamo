@@ -1,13 +1,13 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:kakra/PROVIDERS/profile_provider.dart';
-import 'package:kakra/SCREENS/sellers_HQ/seller_hq_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakra/SERVICES/media_services.dart';
 import 'package:kakra/WIDGETS/customtext_fileds.dart';
-import 'package:provider/provider.dart';
+import 'package:kakra/PROVIDERS/profile_provider.dart';
+import 'package:kakra/SCREENS/sellers_HQ/seller_hq_screen.dart';
+import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 
 // Update ProfileScreen
 class ProfileScreen extends StatefulWidget {
@@ -62,21 +62,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onImageSelected: (File? image) async {
         if (image != null) {
           try {
+            // Upload the new profile picture
             final uploadedImageUrl = await _mediaService.uploadImage(
               imageFile: image,
               context: context,
             );
 
             if (uploadedImageUrl != null) {
-              // Update Firestore with new image URL
-              await _firestore
+              // Update profile picture in 'users' collection
+              await FirebaseFirestore.instance
                   .collection('users')
                   .doc(user.uid)
                   .update({'profileImageUrl': uploadedImageUrl});
+
+              // Update profile picture in all posts made by the user
+              final userPosts = FirebaseFirestore.instance
+                  .collection('posts')
+                  .where('userId', isEqualTo: user.uid);
+
+              final postsSnapshot = await userPosts.get();
+
+              for (var post in postsSnapshot.docs) {
+                await post.reference
+                    .update({'userProfilePic': uploadedImageUrl});
+              }
+
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Profile picture updated!')),
+              );
             }
           } catch (e) {
             if (kDebugMode) {
-              print('Error in _onChangeProfilePicture: $e');
+              print('Error updating profile picture: $e');
             }
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Error updating profile picture: $e')),

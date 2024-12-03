@@ -1,14 +1,11 @@
 import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:kakra/PROVIDERS/messages_provider.dart';
-import 'package:kakra/WIDGETS/MARKET_PLACE/product_card.dart';
-import 'package:kakra/WIDGETS/contents_filter/filter.dart';
 import 'package:kakra/WIDGETS/reusable_button.dart';
+import 'package:kakra/WIDGETS/contents_filter/filter.dart';
+import 'package:kakra/WIDGETS/MARKET_PLACE/product_card.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 
 class SellerDetailsScreen extends StatelessWidget {
   const SellerDetailsScreen({super.key});

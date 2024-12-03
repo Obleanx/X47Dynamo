@@ -11,6 +11,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:kakra/PROVIDERS/home_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kakra/PROVIDERS/posting_provider.dart';
+import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
 
 // post_screen.dart
 // Custom Expandable App Bar
@@ -129,6 +130,7 @@ class PostCreationScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => PostProvider()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
+        ChangeNotifierProvider(create: (_) => PostProvider2()),
       ],
       child: Scaffold(
         body: Consumer<PostProvider>(

@@ -1,10 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kakra/PROVIDERS/profile_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 class PostContainer2 extends StatefulWidget {
@@ -19,13 +17,13 @@ class PostContainer2 extends StatefulWidget {
 class _PostContainer2State extends State<PostContainer2> {
   bool _isLiked = false;
   int _likeCount = 0;
-  String? _userLocation;
 
   @override
   void initState() {
     super.initState();
     _fetchLikeStatus();
     _fetchUserLocation();
+    _fetchPostCreatorDetails();
   }
 
   // Fetch location from Firebase (or another source)
@@ -38,11 +36,12 @@ class _PostContainer2State extends State<PostContainer2> {
             .doc(user.uid)
             .get();
         setState(() {
-          _userLocation = userDoc[
-              'location']; // Assuming location field exists in Firestore
+// Assuming location field exists in Firestore
         });
       } catch (e) {
-        print('Error fetching user location: $e');
+        if (kDebugMode) {
+          print('Error fetching user location: $e');
+        }
       }
     }
   }
@@ -104,54 +103,89 @@ class _PostContainer2State extends State<PostContainer2> {
     );
   }
 
-  // User Header with Profile Image
-  Widget _buildUserHeader(BuildContext context) {
-    return Consumer<ProfileProvider>(
-      builder: (context, profileProvider, child) {
-        final user = FirebaseAuth.instance.currentUser;
-        final profileImageUrl = profileProvider.profileImageUrl;
-        final location =
-            _userLocation ?? 'Unknown Location'; // Use _userLocation here
+  // Fetch post creator's details from Firestore
+  Future<void> _fetchPostCreatorDetails() async {
+    try {
+      // Use the userId from the post data to fetch the original creator's details
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.postData['userId'])
+          .get();
 
-        if (profileProvider.isLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+      if (userDoc.exists) {
+        // Extract user details
+        final userData = userDoc.data() ?? {};
+
+        // Prepare user details
+        final String firstName = userData['firstName'] ?? 'Anonymous';
+        final String lastName = userData['lastName'] ?? '';
+        final String profileImageUrl = userData['profileImageUrl'] ?? '';
+        final String location = userData['location'] ?? 'Unknown Location';
+
+        if (mounted) {
+          setState(() {
+            // Update widget with fetched user details
+            widget.postData['userName'] = '$firstName $lastName'.trim();
+            widget.postData['userProfilePic'] = profileImageUrl;
+            widget.postData['location'] = location;
+          });
         }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching post creator details: $e');
+      }
+    }
+  }
 
-        return Row(
+// Update your _buildUserHeader method to handle dynamic profile image
+  Widget _buildUserHeader(BuildContext context) {
+    // Use the saved user details directly from the post data
+    final userName = widget.postData['userName'] ?? 'Anonymous';
+    final userProfilePic = widget.postData['userProfilePic'] ?? '';
+    final userLocation = widget.postData['location'] ?? 'Unknown Location';
+
+    return Row(
+      children: [
+        // Profile Image
+        CircleAvatar(
+          radius: 20,
+          backgroundColor: Colors.grey[200],
+          child: userProfilePic.isNotEmpty
+              ? ClipOval(
+                  child: CachedNetworkImage(
+                    imageUrl: userProfilePic,
+                    fit: BoxFit.cover,
+                    width: 40,
+                    height: 40,
+                    placeholder: (context, url) =>
+                        Icon(Icons.person, color: Colors.grey[400]),
+                    errorWidget: (context, url, error) {
+                      if (kDebugMode) {
+                        print('Error loading profile image: $error');
+                      }
+                      return Icon(Icons.person, color: Colors.grey[400]);
+                    },
+                  ),
+                )
+              : Icon(Icons.person, color: Colors.grey[400]),
+        ),
+        const SizedBox(width: 10),
+        // User Name and Location
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Profile Image
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.grey[200],
-              backgroundImage: profileImageUrl != null &&
-                      profileImageUrl.isNotEmpty
-                  ? CachedNetworkImageProvider(profileImageUrl) as ImageProvider
-                  : const AssetImage('lib/images/kr5.png'),
-              child: profileImageUrl == null || profileImageUrl.isEmpty
-                  ? Icon(Icons.person, color: Colors.grey[400])
-                  : null,
+            Text(
+              userName,
+              style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(width: 10),
-            // User Name (e.g., FirstName LastName)
-            // User Name and Location
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${profileProvider.firstName ?? ''} ',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  location, // Display user's location
-                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                ),
-              ],
+            Text(
+              userLocation,
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
             ),
           ],
-        );
-      },
+        ),
+      ],
     );
   }
 

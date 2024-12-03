@@ -9,12 +9,14 @@ class ProfileProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool? _isVerified;
   bool? get isVerified => _isVerified;
+  String? _location;
 
   // Getters
   String? get profileImageUrl => _profileImageUrl;
   String? get firstName => _firstName;
   String? get lastName => _lastName;
   bool get isLoading => _isLoading;
+  String? get location => _location;
 
   // Setters
   void setProfileImageUrl(String url) {
@@ -26,6 +28,7 @@ class ProfileProvider extends ChangeNotifier {
     _isLoading = loading;
     notifyListeners();
   }
+  // Setter methods
 
   // Initialize profile
   Future<void> initializeProfile() async {

@@ -1,8 +1,10 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kakra/PROVIDERS/profile_provider.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class PostProvider2 with ChangeNotifier {
@@ -49,15 +51,20 @@ class PostProvider2 with ChangeNotifier {
         throw Exception("User is not authenticated.");
       }
 
-      // Fetch user details from Firestore
+      // Fetch user document directly
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
 
-      // Get user's details
-      String userName = userDoc.data()?['firstName'] ?? 'Anonymous';
-      String? userProfilePic = userDoc.data()?['profilePicUrl'];
+      final userData = userDoc.data() ?? {};
+
+      // Extract user details
+      String firstName = userData['firstName'] ?? 'Anonymous';
+      String lastName = userData['lastName'] ?? '';
+      String userProfilePic = userData['profileImageUrl'] ?? '';
+      String userLocation = userData['location'] ?? 'Unknown Location';
+      String userName = '$firstName $lastName'.trim();
 
       // Upload post image if exists
       if (_imagePath != null) {
@@ -71,25 +78,18 @@ class PostProvider2 with ChangeNotifier {
         imageUrl = await ref.getDownloadURL();
       }
 
-      // Get user's saved location from Firestore
-      String? userLocation = userDoc.data()?['location'];
-
       // Create post in Firestore
       final postRef = await FirebaseFirestore.instance.collection('posts').add({
         'content': _content,
-        'location':
-            userLocation ?? _location, // Use saved location or current input
         'imageUrl': imageUrl,
         'timestamp': FieldValue.serverTimestamp(),
         'userId': user.uid,
         'userName': userName,
         'userProfilePic': userProfilePic,
-        'likes': 0, // Initialize likes count
+        'location': userLocation,
       });
 
-      // Reset state
       _content = '';
-      _location = '';
       _imagePath = null;
 
       return postRef;
@@ -104,10 +104,19 @@ class PostProvider2 with ChangeNotifier {
     }
   }
 
-  // Method to fetch posts
+  // Modified getPosts method to ensure all posts are fetched
   Stream<QuerySnapshot> getPosts() {
     return FirebaseFirestore.instance
         .collection('posts')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+
+  // Optional: Add a method to fetch a specific user's posts
+  Stream<QuerySnapshot> getUserPosts(String userId) {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .where('userId', isEqualTo: userId)
         .orderBy('timestamp', descending: true)
         .snapshots();
   }
