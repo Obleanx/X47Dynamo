@@ -1,7 +1,7 @@
-// categories_provider.dart
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kakra/WIDGETS/contents_filter/categories_screen.dart';
+// categories_provider.dart
 
 class CategoriesProvider with ChangeNotifier {
   final List<CategoryItem> categories = [
@@ -31,6 +31,59 @@ class CategoriesProvider with ChangeNotifier {
         'Home Appliances',
         'Furniture',
         'Kitchen Essentials'
+      ],
+    ),
+    CategoryItem(
+      name: 'Musical Instruments',
+      icon: FontAwesomeIcons.guitar,
+      subCategories: [
+        'Guitars',
+        'Keyboards',
+        'Cellos & Violins',
+        'Drums',
+        'Wind Instruments',
+        'DJ Equipment',
+        'Audio Interfaces',
+        'Amplifiers',
+        'Accessories'
+      ],
+    ),
+    CategoryItem(
+      name: 'Books & Education',
+      icon: FontAwesomeIcons.book,
+      subCategories: [
+        'Textbooks',
+        'Novels',
+        'Academic Books',
+        'Comics',
+        'Language Learning',
+        'Study Materials',
+        'Stationery'
+      ],
+    ),
+    CategoryItem(
+      name: 'Sports & Outdoors',
+      icon: FontAwesomeIcons.basketball,
+      subCategories: [
+        'Team Sports',
+        'Gym Equipment',
+        'Outdoor Gear',
+        'Camping',
+        'Fishing',
+        'Cycling Gear',
+        'Sportswear'
+      ],
+    ),
+    CategoryItem(
+      name: 'Gaming & Entertainment',
+      icon: FontAwesomeIcons.gamepad,
+      subCategories: [
+        'Video Games',
+        'Gaming Consoles',
+        'Board Games',
+        'Collectibles',
+        'Gaming Accessories',
+        'Home Entertainment'
       ],
     ),
     CategoryItem(

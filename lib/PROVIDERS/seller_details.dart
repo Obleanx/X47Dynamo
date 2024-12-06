@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:kakra/MODELS/product_.dart';
 import 'package:kakra/WIDGETS/MARKET_PLACE/selers_details.dart';
-import 'package:provider/provider.dart';
 
 // Provider Widget
 class SellerDetailsProvider extends StatelessWidget {

@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:kakra/PROVIDERS/ListingProvider.dart';
-import 'package:kakra/PROVIDERS/auth_provider.dart';
-import 'package:kakra/PROVIDERS/categories_provider.dart';
-import 'package:kakra/PROVIDERS/home_provider.dart';
-import 'package:kakra/PROVIDERS/market_place_provider.dart';
-import 'package:kakra/PROVIDERS/messages_provider.dart';
-import 'package:kakra/PROVIDERS/onboarding_provider.dart';
-import 'package:kakra/PROVIDERS/posting_provider.dart';
-import 'package:kakra/PROVIDERS/product_description_provider.dart';
-import 'package:kakra/PROVIDERS/profile_provider.dart';
-import 'package:kakra/PROVIDERS/sellerlisting_provider.dart';
-import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
-import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
-import 'package:kakra/SCREENS/Home_screens/bottom_navBar/messages.dart';
-import 'package:kakra/SCREENS/Home_screens/bottom_navBar/profile.dart';
-import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
-import 'package:kakra/SCREENS/Home_screens/post/creating_post.dart';
-import 'package:kakra/SCREENS/all_onboarding_screens.dart';
-import 'package:kakra/SCREENS/welcom_screen.dart';
-import 'package:kakra/SERVICES/options.dart';
 import 'package:provider/provider.dart';
+import 'package:kakra/SERVICES/options.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kakra/SCREENS/welcom_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:kakra/PROVIDERS/auth_provider.dart';
+import 'package:kakra/PROVIDERS/home_provider.dart';
+import 'WIDGETS/MARKET_PLACE/backend_products.dart';
+import 'package:kakra/PROVIDERS/ListingProvider.dart';
+import 'package:kakra/PROVIDERS/posting_provider.dart';
+import 'package:kakra/PROVIDERS/profile_provider.dart';
+import 'package:kakra/PROVIDERS/messages_provider.dart';
+import 'package:kakra/PROVIDERS/categories_provider.dart';
+import 'package:kakra/PROVIDERS/onboarding_provider.dart';
+import 'package:kakra/SCREENS/all_onboarding_screens.dart';
+import 'package:kakra/PROVIDERS/market_place_provider.dart';
+import 'package:kakra/PROVIDERS/sellerlisting_provider.dart';
+import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
+import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
+import 'package:kakra/PROVIDERS/product_description_provider.dart';
+import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
+import 'package:kakra/SCREENS/Home_screens/post/creating_post.dart';
+import 'package:kakra/SCREENS/Home_screens/bottom_navBar/profile.dart';
+import 'package:kakra/SCREENS/Home_screens/bottom_navBar/messages.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +48,8 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(create: (_) => PostProvider()),
         ChangeNotifierProvider(create: (_) => PostProvider2()),
+        ChangeNotifierProvider(create: (_) => FirebaseProductProvider()),
+
         // Add this line
       ],
       child: const MyApp(),

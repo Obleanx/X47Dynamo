@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:kakra/SCREENS/Auth_screens/create_newpassword.dart';
-import 'package:kakra/WIDGETS/kakra_button2.dart';
 import 'package:provider/provider.dart';
+import 'package:kakra/WIDGETS/kakra_button2.dart';
+import 'package:kakra/WIDGETS/google_sign_up.dart';
 import 'package:kakra/PROVIDERS/auth_provider.dart';
+import 'package:kakra/WIDGETS/terms_of_service.dart';
 import 'package:kakra/WIDGETS/registration_form.dart';
 import 'package:kakra/WIDGETS/registration_tabs.dart';
 import 'package:kakra/WIDGETS/customtext_fileds.dart';
-import 'package:kakra/WIDGETS/google_sign_up.dart';
-import 'package:kakra/WIDGETS/terms_of_service.dart';
+import 'package:kakra/SCREENS/Auth_screens/create_newpassword.dart';
 
 class SignUpScreen extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -94,17 +94,6 @@ class SignUpScreen extends StatelessWidget {
                           style: TextStyle(fontSize: 16, color: Colors.white),
                         ),
                       ),
-                      // KakraButton(
-                      // text: "submit",
-                      // onPressed: () {
-                      // provider.login(context);
-                      // Navigator.pushReplacement(
-                      // context,
-                      // MaterialPageRoute(
-                      // builder: (context) => const HomeScreen()),
-                      // );
-                      // },
-                      // ),
                     ] else ...[
                       Form(
                         key: _formKey,

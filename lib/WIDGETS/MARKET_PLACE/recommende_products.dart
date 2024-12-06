@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 
 class RecommendedProductCard extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-  final double price;
+  final Map<String, dynamic> productData;
   final VoidCallback onTap;
 
   const RecommendedProductCard({
     super.key,
-    required this.imageUrl,
-    required this.name,
-    required this.price,
+    required this.productData,
     required this.onTap,
   });
 
@@ -29,14 +27,21 @@ class RecommendedProductCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
-                  image: AssetImage(imageUrl), // Changed to AssetImage
+                  image: CachedNetworkImageProvider(
+                    (productData['imageUrls'] as List?)?.isNotEmpty == true 
+                        ? productData['imageUrls'][0] 
+                        : '',
+                  ),
                   fit: BoxFit.cover,
                 ),
               ),
             ),
             const SizedBox(height: 8),
-            Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text('\$${price.toStringAsFixed(2)}'),
+            Text(
+              productData['productName'] ?? 'Unknown Product', 
+              style: const TextStyle(fontWeight: FontWeight.bold)
+            ),
+            Text('\$${(productData['price'] ?? 0.0).toStringAsFixed(2)}'),
           ],
         ),
       ),

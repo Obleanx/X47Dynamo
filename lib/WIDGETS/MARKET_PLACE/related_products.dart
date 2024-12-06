@@ -5,10 +5,12 @@ class RelatedProductItem extends StatelessWidget {
   final String name;
   final double price;
   final VoidCallback onTap;
+  final String? sellerId;
 
   const RelatedProductItem({
     Key? key,
     required this.imageUrl,
+    this.sellerId,
     required this.name,
     required this.price,
     required this.onTap,

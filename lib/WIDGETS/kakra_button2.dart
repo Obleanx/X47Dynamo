@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kakra/CORE/constants.dart';
 
 class KakraButton2 extends StatelessWidget {
   final bool isLoading;
@@ -18,29 +19,30 @@ class KakraButton2 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [
-            Color(0xFF2486C2),
-            Color(0xFF2BBCE7),
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.bottomRight,
-        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withOpacity(0.6),
+            blurRadius: 15,
+            spreadRadius: 2,
+            offset: const Offset(0, 4),
+          ),
+        ],
         borderRadius: BorderRadius.circular(7),
       ),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          padding: padding,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 5,
         ),
-        onPressed: isLoading ? null : onPressed,
+        onPressed: onPressed,
         child: SizedBox(
-          height: 20, // Fixed height for consistent button size
+          height: 20,
           child: Center(
             child: isLoading
                 ? const CircularProgressIndicator(
-                    strokeWidth: 2,
+                    strokeWidth: 3,
                     color: Colors.white,
                   )
                 : child,

@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:kakra/MODELS/product_.dart';
-import 'package:kakra/PROVIDERS/market_place_provider.dart';
-import 'package:kakra/SCREENS/sellers_HQ/listings.dart';
-import 'package:kakra/SCREENS/sellers_HQ/seller_hq_screen.dart';
-import 'package:kakra/WIDGETS/_appbar.dart';
-import 'package:kakra/WIDGETS/contents_filter/categories_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:kakra/MODELS/product_.dart';
+import 'package:kakra/WIDGETS/_appbar.dart';
+import 'package:kakra/SCREENS/sellers_HQ/listings.dart';
+import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import '../../../WIDGETS/MARKET_PLACE/product_details.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kakra/SCREENS/sellers_HQ/seller_hq_screen.dart';
+import 'package:kakra/WIDGETS/MARKET_PLACE/backend_products.dart';
+import 'package:kakra/WIDGETS/contents_filter/categories_screen.dart';
 
 // Product Model
 class Product {
@@ -26,8 +27,23 @@ class Product {
   });
 }
 
-class MarketplaceContent extends StatelessWidget {
+class MarketplaceContent extends StatefulWidget {
   const MarketplaceContent({super.key});
+
+  @override
+  State<MarketplaceContent> createState() => _MarketplaceContentState();
+}
+
+class _MarketplaceContentState extends State<MarketplaceContent> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch listings when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<FirebaseProductProvider>(context, listen: false)
+          .fetchListings();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,7 +145,46 @@ class MarketplaceContent extends StatelessWidget {
               ),
             ),
           ),
+          SliverPadding(
+            padding: const EdgeInsets.all(16.0),
+            sliver: Consumer<FirebaseProductProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading && provider.listings.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
 
+                if (provider.error != null) {
+                  return SliverToBoxAdapter(
+                    child: Text('Error: ${provider.error}'),
+                  );
+                }
+
+                if (provider.listings.isEmpty) {
+                  return const SliverToBoxAdapter(
+                    child: Text('No listings found'),
+                  );
+                }
+
+                return SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 0.75,
+                    mainAxisSpacing: 16.0,
+                    crossAxisSpacing: 16.0,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final listing = provider.listings[index];
+                      return ProductCardFromFirebase(listingData: listing);
+                    },
+                    childCount: provider.listings.length,
+                  ),
+                );
+              },
+            ),
+          ),
           // Products Grid
           SliverPadding(
             padding: const EdgeInsets.all(16.0),

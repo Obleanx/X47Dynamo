@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kakra/CORE/constants.dart';
 import '../../PROVIDERS/profile_provider.dart';
 import 'package:kakra/PROVIDERS/seller_hq_provider.dart';
@@ -8,9 +9,14 @@ import 'package:kakra/PROVIDERS/categories_provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
-class SellerHQScreen extends StatelessWidget {
+class SellerHQScreen extends StatefulWidget {
   const SellerHQScreen({super.key});
 
+  @override
+  State<SellerHQScreen> createState() => _SellerHQScreenState();
+}
+
+class _SellerHQScreenState extends State<SellerHQScreen> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -337,23 +343,60 @@ class SellerHQScreen extends StatelessWidget {
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       "Kakra Marketplace is a place where users can responsibly buy and sell, with all listings being accurate, lawful, and fairly priced. Sellers are expected to provide clear product descriptions and communicate respectfully. Fraudulent, misleading, or inappropriate content may result in listing removal or account suspension to ensure a safe and trusted environment for everyone.",
-                      style: TextStyle(fontSize: 12, color: Colors.grey),
+                      style: TextStyle(
+                          fontSize: 12, color: Color.fromARGB(255, 6, 2, 2)),
                     ),
                   ),
                   const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            provider.isFormValid ? Colors.blue : Colors.grey,
-                      ),
-                      onPressed: provider.isFormValid
-                          ? () => provider.submitListing(context)
-                          : null,
-                      child: const Text('Submit Listing'),
-                    ),
-                  ),
+                  Consumer<SellerHQProvider>(
+                    builder: (context, provider, child) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          boxShadow: provider.isFormValid
+                              ? [
+                                  BoxShadow(
+                                    color: AppColors.primary.withOpacity(0.6),
+                                    blurRadius: 15,
+                                    spreadRadius: 2,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ]
+                              : [],
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: provider.isFormValid
+                                ? AppColors.primary
+                                : Colors.grey.shade300,
+                            foregroundColor: provider.isFormValid
+                                ? Colors.white
+                                : Colors.grey.shade600,
+                            elevation: provider.isFormValid ? 5 : 1,
+                          ),
+                          onPressed: provider.isFormValid
+                              ? () {
+                                  if (kDebugMode) {
+                                    print('Submitting listing');
+                                  }
+                                  provider.submitListing(context);
+                                }
+                              : null,
+                          child: provider.isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                )
+                              : const Text('Submit Listing'),
+                        ),
+                      );
+                    },
+                  )
                 ],
               );
             },

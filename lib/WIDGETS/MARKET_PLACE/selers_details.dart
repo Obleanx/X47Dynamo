@@ -3,12 +3,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kakra/WIDGETS/reusable_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kakra/WIDGETS/contents_filter/filter.dart';
 import 'package:kakra/WIDGETS/MARKET_PLACE/product_card.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SellerDetailsScreen extends StatelessWidget {
   const SellerDetailsScreen({super.key});
+
+  // Helper method to format date
+  String _formatJoinDate(Timestamp? timestamp) {
+    if (timestamp == null) return 'Unknown';
+
+    final DateTime joinDate = timestamp.toDate();
+    return '${joinDate.day} ${_getMonthName(joinDate.month)} ${joinDate.year}';
+  }
+
+  // Helper method to get month name
+  String _getMonthName(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December'
+    ];
+    return months[month - 1];
+  }
 
   @override
   Widget build(BuildContext context) {

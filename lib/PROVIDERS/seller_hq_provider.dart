@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,8 +14,10 @@ class SellerHQProvider extends ChangeNotifier {
   String? description;
   String? category;
   String? condition;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
-  // Add this method to switch the main image
+  // this method to switches the main image
   void switchMainImage(int index) {
     if (index >= 0 && index < pickedImages.length) {
       currentMainImageIndex = index;
@@ -24,8 +27,6 @@ class SellerHQProvider extends ChangeNotifier {
 
   // Reset the main image index to the first image when new images are picked
   int currentMainImageIndex = 0;
-  @override
-  notifyListeners();
 
   Future<void> pickImages(BuildContext context) async {
     final ImagePicker picker = ImagePicker();
@@ -60,6 +61,9 @@ class SellerHQProvider extends ChangeNotifier {
   }
 
   void updateField(String field, String value) {
+    if (kDebugMode) {
+      print('Updating field: $field with value: $value');
+    }
     switch (field) {
       case 'productName':
         productName = value;
@@ -94,13 +98,92 @@ class SellerHQProvider extends ChangeNotifier {
         pickedImages.length <= 10;
   }
 
+//sellers informations profile
+  Future<void> createSellerProfile(BuildContext context) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in to create a seller profile'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // Check if seller profile already exists
+      final sellerDoc = await FirebaseFirestore.instance
+          .collection('sellers')
+          .doc(user.uid)
+          .get();
+
+      if (sellerDoc.exists) {
+        // Seller profile already exists, no need to create again
+        return;
+      }
+
+      // Fetch user information from the users collection
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('User profile not found'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // Extract user information
+      final userData = userDoc.data()!;
+
+      // Create seller profile document
+      await FirebaseFirestore.instance.collection('sellers').doc(user.uid).set({
+        'userId': user.uid,
+        'firstName': userData['firstName'] ?? '',
+        'lastName': userData['lastName'] ?? '',
+        'foreignPhone': userData['foreignPhone'] ?? '',
+        'location': userData['location'] ?? '',
+        'profileImageUrl': userData['profileImageUrl'] ?? '',
+        'sellerStatus': 'unverified', // Default status
+        'accountCreatedAt': FieldValue.serverTimestamp(),
+        'email': user.email ?? '',
+      });
+
+      if (kDebugMode) {
+        print('Seller profile created successfully');
+      } // Add this for debugging
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error creating seller profile: $e');
+      } // Add this for debugging
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to create seller profile: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   Future<void> submitListing(BuildContext context) async {
+    // Set loading to true at the start of submission
+    _isLoading = true;
+    notifyListeners();
+
     if (!isFormValid) return;
 
     try {
+      // First, create seller profile if it doesn't exist
+      await createSellerProfile(context);
+
       // Upload images to Firebase Storage
       List<String> imageUrls = await _uploadImages();
-
       // Create listing document in Firestore
       // Check if user is authenticated
       final user = FirebaseAuth.instance.currentUser;
@@ -136,6 +219,9 @@ Listing created with care on Kakra Marketplace
         'imageUrls': imageUrls,
         'timestamp': FieldValue.serverTimestamp(),
       });
+      // Set loading to false before showing success dialog
+      _isLoading = false;
+      notifyListeners();
 
       // Show success dialog
       await _showSuccessDialog(context);
@@ -171,6 +257,7 @@ Listing created with care on Kakra Marketplace
       final imageUrl = await imageRef.getDownloadURL();
       imageUrls.add(imageUrl);
     }
+    notifyListeners();
 
     return imageUrls;
   }

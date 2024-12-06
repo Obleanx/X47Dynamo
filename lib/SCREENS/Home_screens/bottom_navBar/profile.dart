@@ -290,6 +290,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 24),
 
                     // Save Button for storing the user data in the database.
+                    // Save Button for storing the user data in the database.
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -311,26 +312,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     'User not authenticated. Please log in again.');
                               }
 
-                              // Save to Firestoredatabase, please be care full here
+                              // Check for empty or invalid fields
+                              if (_formData['firstName'] == null ||
+                                  _formData['firstName']!.isEmpty ||
+                                  _formData['lastName'] == null ||
+                                  _formData['lastName']!.isEmpty ||
+                                  _formData['email'] == null ||
+                                  _formData['email']!.isEmpty) {
+                                throw Exception(
+                                    'Required fields cannot be empty.');
+                              }
+
+                              // Save to Firestore database
                               await FirebaseFirestore.instance
                                   .collection('users')
                                   .doc(user.uid)
-                                  .set({
-                                'firstName': _formData['firstName'] ?? '',
-                                'lastName': _formData['lastName'] ?? '',
-                                'email': _formData['email'] ?? '',
-                                'africanPhone': _formData['africanPhone'] ?? '',
-                                'foreignPhone': _formData['foreignPhone'] ?? '',
-                                'background': _formData['background'] ?? '',
-                                'gender': _formData['gender'] ?? '',
-                                'language': _formData['language'] ?? '',
-                                'location': _formData['location'] ?? '',
-                                'homeTown': _formData['homeTown'] ?? '',
-                                'interests': _formData['interests'] ?? '',
-                                'skills': _formData['skills'] ?? '',
-                                'updatedAt': FieldValue
-                                    .serverTimestamp(), // Add timestamp
-                              });
+                                  .set(
+                                      {
+                                    'userId': user.uid, // Include the user ID
+                                    'firstName': _formData['firstName'],
+                                    'lastName': _formData['lastName'],
+                                    'email': _formData['email'],
+                                    'africanPhone':
+                                        _formData['africanPhone'] ?? '',
+                                    'foreignPhone':
+                                        _formData['foreignPhone'] ?? '',
+                                    'background': _formData['background'] ?? '',
+                                    'gender': _formData['gender'] ?? '',
+                                    'language': _formData['language'] ?? '',
+                                    'location': _formData['location'] ?? '',
+                                    'homeTown': _formData['homeTown'] ?? '',
+                                    'interests': _formData['interests'] ?? '',
+                                    'skills': _formData['skills'] ?? '',
+                                    'updatedAt': FieldValue
+                                        .serverTimestamp(), // Add timestamp
+                                  },
+                                      SetOptions(
+                                          merge:
+                                              true)); // Use merge to overwrite existing data
 
                               // Success message
                               ScaffoldMessenger.of(context).showSnackBar(
