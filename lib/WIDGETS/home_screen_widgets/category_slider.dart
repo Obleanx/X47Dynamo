@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kakra/SCREENS/Home_screens/market%20place/market_home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:kakra/providers/home_provider.dart';
+import 'package:kakra/SCREENS/Home_screens/market%20place/market_home_screen.dart';
 
 class CategorySlider extends StatelessWidget {
   const CategorySlider({super.key});
@@ -27,7 +27,9 @@ class CategorySlider extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const MarketplaceContent(),
+                          builder: (context) => const MarketplaceContent(
+                            userId: 'userID',
+                          ),
                         ),
                       );
                     }

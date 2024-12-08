@@ -92,7 +92,9 @@ class MenuOverlay extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const MarketplaceContent()),
+                            builder: (context) => const MarketplaceContent(
+                                  userId: 'userID',
+                                )),
                       );
                       if (kDebugMode) {
                         print('Market Place tapped');

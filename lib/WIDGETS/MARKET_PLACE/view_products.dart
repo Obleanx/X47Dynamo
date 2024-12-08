@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:kakra/PROVIDERS/seller_details.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class ViewProduct {
   final String name;
-    final String sellerId; // New field
+  final String UserId; // New field
 
   final double price;
   final String description;
@@ -14,8 +10,7 @@ class ViewProduct {
 
   const ViewProduct({
     required this.name,
-        required this.sellerId,
-
+    required this.UserId,
     required this.price,
     required this.description,
     required this.images,

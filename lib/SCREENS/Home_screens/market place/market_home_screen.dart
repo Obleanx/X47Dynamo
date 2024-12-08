@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:kakra/MODELS/product_.dart';
 import 'package:kakra/WIDGETS/_appbar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kakra/SCREENS/sellers_HQ/listings.dart';
 import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import '../../../WIDGETS/MARKET_PLACE/product_details.dart';
@@ -28,7 +29,8 @@ class Product {
 }
 
 class MarketplaceContent extends StatefulWidget {
-  const MarketplaceContent({super.key});
+  const MarketplaceContent({super.key, required this.userId});
+  final String? userId; // Pass the specific user ID
 
   @override
   State<MarketplaceContent> createState() => _MarketplaceContentState();
@@ -43,6 +45,39 @@ class _MarketplaceContentState extends State<MarketplaceContent> {
       Provider.of<FirebaseProductProvider>(context, listen: false)
           .fetchListings();
     });
+
+    _sellerDetailsFuture = fetchSellerDetails();
+    _sellerListingsFuture = fetchSellerListings();
+  }
+
+  late Future<Map<String, dynamic>> _sellerDetailsFuture;
+  late Future<List<Map<String, dynamic>>> _sellerListingsFuture;
+
+  Future<Map<String, dynamic>> fetchSellerDetails() async {
+    final sellerSnapshot = await FirebaseFirestore.instance
+        .collection('sellers')
+        .doc(widget.userId)
+        .get();
+
+    if (!sellerSnapshot.exists) {
+      throw Exception('Seller not found');
+    }
+
+    return sellerSnapshot.data()!;
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSellerListings() async {
+    final listingsSnapshot = await FirebaseFirestore.instance
+        .collection('listings')
+        .where('userId', isEqualTo: widget.userId)
+        .get();
+
+    return listingsSnapshot.docs.map((doc) {
+      return {
+        'id': doc.id,
+        ...doc.data(),
+      };
+    }).toList();
   }
 
   @override

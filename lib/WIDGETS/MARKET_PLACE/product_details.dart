@@ -199,8 +199,9 @@ class ProductDetailsScreen extends StatelessWidget {
                                   FutureBuilder<QuerySnapshot>(
                                     future: FirebaseFirestore.instance
                                         .collection('sellers')
-
-                                        // .where('email', isEqualTo: product.email) // Use dot notation
+                                        .where('email',
+                                            isEqualTo: product
+                                                .sellerEmail) // Use the product's seller email
                                         .limit(1)
                                         .get(),
                                     builder: (context, snapshot) {
@@ -238,8 +239,12 @@ class ProductDetailsScreen extends StatelessWidget {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) =>
-                                                const SellerDetailsProvider()),
+                                          builder: (context) =>
+                                              SellerDetailsProvider(
+                                            sellerEmail: product
+                                                .sellerEmail, // Pass the seller's email
+                                          ),
+                                        ),
                                       );
                                     },
                                     child: const Text('See Profile'),
@@ -250,7 +255,9 @@ class ProductDetailsScreen extends StatelessWidget {
                               FutureBuilder<QuerySnapshot>(
                                 future: FirebaseFirestore.instance
                                     .collection('sellers')
-                                    // .where('email', isEqualTo: product['email'])
+                                    .where('email',
+                                        isEqualTo: product
+                                            .sellerEmail) // Use the product's seller email
                                     .limit(1)
                                     .get(),
                                 builder: (context, snapshot) {
@@ -279,7 +286,8 @@ class ProductDetailsScreen extends StatelessWidget {
                                         ),
                                       ),
                                       Text(
-                                          'Joined on ${_formatJoinDate(sellerData?['accountCreatedAt'])}'),
+                                        'Joined on ${_formatJoinDate(sellerData?['accountCreatedAt'])}',
+                                      ),
                                     ],
                                   );
                                 },

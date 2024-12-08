@@ -16,6 +16,10 @@ class ViewProduct {
     required this.sellerName,
     required this.sellerJoinDate,
   });
+
+  String? get userId => null;
+
+  get sellerEmail => null;
 }
 
 // ViewModel

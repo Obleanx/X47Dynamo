@@ -115,7 +115,6 @@ class FirebaseProductProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  // Modify to fetch multiple listings
   Future<void> fetchListings() async {
     try {
       _isLoading = true;
@@ -124,20 +123,24 @@ class FirebaseProductProvider extends ChangeNotifier {
 
       final querySnapshot = await FirebaseFirestore.instance
           .collection('listings')
-          .orderBy('timestamp', descending: true) // Sort by most recent
-          .limit(10) // Fetch up to 10 listings
+          .orderBy('timestamp', descending: true)
+          .limit(10)
           .get();
 
-      _listings = querySnapshot.docs.map((doc) {
-        // return {'id': doc.id, ...doc.data()};
-        // }).toList();
-        // _listings = querySnapshot.docs.map((doc) {
+      _listings = await Future.wait(querySnapshot.docs.map((doc) async {
+        // Fetch seller information for each listing
+        final sellerSnapshot = await FirebaseFirestore.instance
+            .collection('sellers')
+            .doc(doc['userId'])
+            .get();
+
         return {
           'id': doc.id,
           ...doc.data(),
-          'userId': doc['userId'], // Include userId
+          'userId': doc['userId'],
+          'sellerInfo': sellerSnapshot.data() ?? {},
         };
-      }).toList();
+      }).toList());
 
       _isLoading = false;
       notifyListeners();

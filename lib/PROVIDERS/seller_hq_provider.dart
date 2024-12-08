@@ -172,20 +172,12 @@ class SellerHQProvider extends ChangeNotifier {
   }
 
   Future<void> submitListing(BuildContext context) async {
-    // Set loading to true at the start of submission
     _isLoading = true;
     notifyListeners();
 
     if (!isFormValid) return;
 
     try {
-      // First, create seller profile if it doesn't exist
-      await createSellerProfile(context);
-
-      // Upload images to Firebase Storage
-      List<String> imageUrls = await _uploadImages();
-      // Create listing document in Firestore
-      // Check if user is authenticated
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -197,6 +189,12 @@ class SellerHQProvider extends ChangeNotifier {
         return;
       }
 
+      // Ensure seller profile exists
+      await createSellerProfile(context);
+
+      // Upload images to Firebase Storage
+      List<String> imageUrls = await _uploadImages();
+
       // Professionally formatted description
       final formattedDescription = '''
 **${productName ?? ''}** - Product Details
@@ -207,9 +205,10 @@ class SellerHQProvider extends ChangeNotifier {
 ${description ?? ''}
 
 Listing created with care on Kakra Marketplace
-      ''';
+    ''';
 
-      await FirebaseFirestore.instance.collection('listings').add({
+      // Create a map of listing data to reuse
+      final listingData = {
         'userId': user.uid,
         'productName': productName,
         'price': double.parse(price!),
@@ -218,24 +217,109 @@ Listing created with care on Kakra Marketplace
         'condition': condition,
         'imageUrls': imageUrls,
         'timestamp': FieldValue.serverTimestamp(),
-      });
+      };
+
+      // Reference to the sellers collection
+      final sellersRef = FirebaseFirestore.instance.collection('sellers');
+
+      // Reference to the main listings collection
+      final listingsRef = FirebaseFirestore.instance.collection('listings');
+
+      // Create a new listing document in the main listings collection
+      final mainListingDoc = await listingsRef.add(listingData);
+
+      // Add the same listing to the seller's subcollection
+      await sellersRef
+          .doc(user.uid)
+          .collection('listings')
+          .doc(mainListingDoc.id)
+          .set(listingData);
+
       // Set loading to false before showing success dialog
       _isLoading = false;
       notifyListeners();
 
-      // Show success dialog
+      // Show success dialog and navigate
       await _showSuccessDialog(context);
-
-      // Navigate to Marketplace
-      Navigator.pushReplacement(context,
-          MaterialPageRoute(builder: (_) => const MarketplaceContent()));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (_) => const MarketplaceContent(
+                    userId: 'userID',
+                  )));
     } catch (e) {
+      _isLoading = false;
+      notifyListeners();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('we could not submit your listings try again: $e'),
+          content: Text('We could not submit your listing. Try again: $e'),
           backgroundColor: Colors.red,
         ),
       );
+    }
+  }
+
+// Modify your listing fetching method to prevent duplication
+  Future<List<Map<String, dynamic>>> fetchListings() async {
+    try {
+      final listingsSnapshot =
+          await FirebaseFirestore.instance.collection('listings').get();
+
+      // Use a Set to track unique listing IDs
+      final uniqueListings = <String, Map<String, dynamic>>{};
+
+      for (var doc in listingsSnapshot.docs) {
+        // Only add if the listing ID hasn't been seen before
+        if (!uniqueListings.containsKey(doc.id)) {
+          uniqueListings[doc.id] = {'id': doc.id, ...doc.data()};
+        }
+      }
+
+      return uniqueListings.values.toList();
+    } catch (e) {
+      print('Error fetching listings: $e');
+      return [];
+    }
+  }
+
+// Similarly, modify seller listings fetching
+  Future<List<Map<String, dynamic>>> getSellerListings(String sellerId) async {
+    try {
+      final sellersRef = FirebaseFirestore.instance.collection('sellers');
+      final snapshot =
+          await sellersRef.doc(sellerId).collection('listings').get();
+
+      // Use a Set to track unique listing IDs
+      final uniqueListings = <String, Map<String, dynamic>>{};
+
+      for (var doc in snapshot.docs) {
+        // Only add if the listing ID hasn't been seen before
+        if (!uniqueListings.containsKey(doc.id)) {
+          uniqueListings[doc.id] = {'id': doc.id, ...doc.data()};
+        }
+      }
+
+      return uniqueListings.values.toList();
+    } catch (e) {
+      print('Error fetching seller listings: $e');
+      return [];
+    }
+  }
+
+// Method to get all sellers
+  Future<List<Map<String, dynamic>>> getAllSellers() async {
+    try {
+      final sellersSnapshot =
+          await FirebaseFirestore.instance.collection('sellers').get();
+
+      return sellersSnapshot.docs.map((doc) {
+        return {'id': doc.id, ...doc.data()};
+      }).toList();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching sellers: $e');
+      }
+      return [];
     }
   }
 
@@ -265,25 +349,87 @@ Listing created with care on Kakra Marketplace
   Future<void> _showSuccessDialog(BuildContext context) {
     return showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Listing Created Successfully!'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.check_circle, color: Colors.green, size: 80),
-            const SizedBox(height: 16),
-            Text(
-              'Your product "$productName" is now live on Kakra Marketplace!',
-              textAlign: TextAlign.center,
-            ),
-          ],
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+        elevation: 10,
+        backgroundColor: Colors.white,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.green.withOpacity(0.3),
+                spreadRadius: 3,
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
           ),
-        ],
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Animated check icon with a bit more flair
+              TweenAnimationBuilder(
+                duration: const Duration(milliseconds: 500),
+                tween: Tween<double>(begin: 0, end: 1),
+                builder: (context, double value, child) {
+                  return Transform.scale(
+                    scale: value,
+                    child: Icon(
+                      Icons.check_circle,
+                      color: Colors.green.shade600,
+                      size: 100,
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Listing Created Successfully!',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green.shade800,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Your product "$productName" is now live on Kakra Marketplace!',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green.shade600,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  'Continue',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
