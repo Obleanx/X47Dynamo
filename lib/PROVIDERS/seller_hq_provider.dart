@@ -206,10 +206,22 @@ ${description ?? ''}
 
 Listing created with care on Kakra Marketplace
     ''';
-
+      // Fetch the seller's email explicitly
+      final sellerDoc = await FirebaseFirestore.instance
+          .collection('sellers')
+          .doc(user.uid)
+          .get();
       // Create a map of listing data to reuse
       final listingData = {
         'userId': user.uid,
+        'sellerEmail': sellerDoc.data()?['email'] ??
+            user.email, // Explicitly add seller email
+
+        'sellerId': user.uid, // Explicitly add sellerId
+        'sellerName':
+            '${sellerDoc.data()?['firstName']} ${sellerDoc.data()?['lastName']}',
+        'sellerProfileImage': sellerDoc.data()?['profileImageUrl'],
+
         'productName': productName,
         'price': double.parse(price!),
         'description': formattedDescription,
@@ -256,70 +268,6 @@ Listing created with care on Kakra Marketplace
           backgroundColor: Colors.red,
         ),
       );
-    }
-  }
-
-// Modify your listing fetching method to prevent duplication
-  Future<List<Map<String, dynamic>>> fetchListings() async {
-    try {
-      final listingsSnapshot =
-          await FirebaseFirestore.instance.collection('listings').get();
-
-      // Use a Set to track unique listing IDs
-      final uniqueListings = <String, Map<String, dynamic>>{};
-
-      for (var doc in listingsSnapshot.docs) {
-        // Only add if the listing ID hasn't been seen before
-        if (!uniqueListings.containsKey(doc.id)) {
-          uniqueListings[doc.id] = {'id': doc.id, ...doc.data()};
-        }
-      }
-
-      return uniqueListings.values.toList();
-    } catch (e) {
-      print('Error fetching listings: $e');
-      return [];
-    }
-  }
-
-// Similarly, modify seller listings fetching
-  Future<List<Map<String, dynamic>>> getSellerListings(String sellerId) async {
-    try {
-      final sellersRef = FirebaseFirestore.instance.collection('sellers');
-      final snapshot =
-          await sellersRef.doc(sellerId).collection('listings').get();
-
-      // Use a Set to track unique listing IDs
-      final uniqueListings = <String, Map<String, dynamic>>{};
-
-      for (var doc in snapshot.docs) {
-        // Only add if the listing ID hasn't been seen before
-        if (!uniqueListings.containsKey(doc.id)) {
-          uniqueListings[doc.id] = {'id': doc.id, ...doc.data()};
-        }
-      }
-
-      return uniqueListings.values.toList();
-    } catch (e) {
-      print('Error fetching seller listings: $e');
-      return [];
-    }
-  }
-
-// Method to get all sellers
-  Future<List<Map<String, dynamic>>> getAllSellers() async {
-    try {
-      final sellersSnapshot =
-          await FirebaseFirestore.instance.collection('sellers').get();
-
-      return sellersSnapshot.docs.map((doc) {
-        return {'id': doc.id, ...doc.data()};
-      }).toList();
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching sellers: $e');
-      }
-      return [];
     }
   }
 

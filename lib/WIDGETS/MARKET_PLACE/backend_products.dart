@@ -31,6 +31,8 @@ class ProductCardFromFirebase extends StatelessWidget {
                   sellerName: listingData['sellerName'] ?? 'Unknown Seller',
                   sellerJoinDate:
                       _formatJoinDate(listingData['sellerJoinDate']),
+                  sellerId: listingData['sellerId'], // Add this
+                  sellerEmail: listingData['sellerEmail'],
                 ),
               ),
             ),
@@ -112,6 +114,8 @@ class FirebaseProductProvider extends ChangeNotifier {
   String? _error;
 
   List<Map<String, dynamic>> get listings => _listings;
+  Map<String, Map<String, dynamic>> _sellerCache = {}; // Add a seller cache
+
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -127,20 +131,26 @@ class FirebaseProductProvider extends ChangeNotifier {
           .limit(10)
           .get();
 
-      _listings = await Future.wait(querySnapshot.docs.map((doc) async {
-        // Fetch seller information for each listing
-        final sellerSnapshot = await FirebaseFirestore.instance
-            .collection('sellers')
-            .doc(doc['userId'])
-            .get();
+      // First, collect all unique user IDs
+      final userIds = querySnapshot.docs.map((doc) => doc['userId']).toSet();
 
+      // Fetch seller information for all unique users in one go
+      final sellerSnapshots = await Future.wait(userIds.map((userId) =>
+          FirebaseFirestore.instance.collection('sellers').doc(userId).get()));
+
+      // Create a map of seller information for quick lookup
+      _sellerCache = {
+        for (var snapshot in sellerSnapshots) snapshot.id: snapshot.data() ?? {}
+      };
+      _listings = querySnapshot.docs.map((doc) {
+        final data = doc.data();
         return {
           'id': doc.id,
-          ...doc.data(),
-          'userId': doc['userId'],
-          'sellerInfo': sellerSnapshot.data() ?? {},
+          ...data,
+          'sellerId': data['sellerId'],
+          'sellerInfo': _sellerCache[data['sellerId']] ?? {},
         };
-      }).toList());
+      }).toList();
 
       _isLoading = false;
       notifyListeners();
@@ -151,28 +161,9 @@ class FirebaseProductProvider extends ChangeNotifier {
     }
   }
 
-  // Optional: Add method to load more listings
-  Future<void> loadMoreListings(DocumentSnapshot? lastDocument) async {
-    try {
-      if (lastDocument == null) return;
-
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('listings')
-          .orderBy('timestamp', descending: true)
-          .startAfterDocument(lastDocument)
-          .limit(10)
-          .get();
-
-      final newListings = querySnapshot.docs.map((doc) {
-        return {'id': doc.id, ...doc.data()};
-      }).toList();
-
-      _listings.addAll(newListings);
-      notifyListeners();
-    } catch (e) {
-      _error = 'Failed to load more listings: ${e.toString()}';
-      notifyListeners();
-    }
+  // Optional: Method to clear cache if needed
+  void clearCache() {
+    _sellerCache.clear();
   }
 }
 

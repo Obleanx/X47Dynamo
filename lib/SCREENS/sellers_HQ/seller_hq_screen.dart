@@ -344,7 +344,9 @@ class _SellerHQScreenState extends State<SellerHQScreen> {
                     child: Text(
                       "Kakra Marketplace is a place where users can responsibly buy and sell, with all listings being accurate, lawful, and fairly priced. Sellers are expected to provide clear product descriptions and communicate respectfully. Fraudulent, misleading, or inappropriate content may result in listing removal or account suspension to ensure a safe and trusted environment for everyone.",
                       style: TextStyle(
-                          fontSize: 12, color: Color.fromARGB(255, 6, 2, 2)),
+                        fontSize: 12,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),

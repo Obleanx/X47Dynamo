@@ -76,21 +76,40 @@ class AppColors {
 
 // Reusable Product Card Widget
 class ProductCard2 extends StatelessWidget {
-  final String imageUrl;
-  final String name;
-  final double price;
+  final dynamic productData;
   final VoidCallback onTap;
 
   const ProductCard2({
     super.key,
-    required this.imageUrl,
-    required this.name,
-    required this.price,
+    required this.productData,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+    // More comprehensive image URL detection
+    String? imageUrl;
+    if (productData is Map) {
+      imageUrl = productData['imageUrl'] ??
+          productData['image'] ??
+          productData['productImage'] ??
+          productData['productImageUrl'] ??
+          productData['imageURL'] ?? // Added additional variations
+          productData['img'];
+    }
+
+    // If no image URL is found, use a network default or local asset
+    imageUrl ??= 'https://via.placeholder.com/150'; // Placeholder image
+    // OR use local asset: 'lib/images/default_product.png'
+
+    String name = productData is Map
+        ? (productData['productName'] ?? 'Unknown Product')
+        : 'Unknown Product';
+
+    double price = productData is Map
+        ? (double.tryParse(productData['price']?.toString() ?? '0.0') ?? 0.0)
+        : 0.0;
+
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -99,23 +118,33 @@ class ProductCard2 extends StatelessWidget {
           Container(
             width: 140,
             height: 80,
-            margin: const EdgeInsets.symmetric(
-              horizontal: 10,
-            ),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(3),
               image: DecorationImage(
-                image: AssetImage(imageUrl),
+                image: imageUrl.startsWith('http')
+                    ? NetworkImage(imageUrl)
+                    : AssetImage(imageUrl) as ImageProvider,
                 fit: BoxFit.cover,
+                onError: (exception, stackTrace) {
+                  print('Error loading image: $exception');
+                },
               ),
+              color: Colors.grey[200], // Fallback background color
             ),
+            child: imageUrl.startsWith('http')
+                ? null
+                : Center(
+                    child: Icon(
+                      Icons.image,
+                      color: Colors.grey[400],
+                      size: 40,
+                    ),
+                  ),
           ),
           Expanded(
-            // Ensures the remaining items adjust to available space
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Text(
                 name,
                 style: const TextStyle(fontWeight: FontWeight.w900),
@@ -125,9 +154,7 @@ class ProductCard2 extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 8,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Text(
               '\$${price.toStringAsFixed(2)}',
               style: const TextStyle(

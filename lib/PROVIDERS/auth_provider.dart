@@ -1,8 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakra/SERVICES/firebase_service.dart';
+import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
 
 class RegistrationProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -69,11 +69,19 @@ class RegistrationProvider extends ChangeNotifier {
     if (value == null || value.isEmpty) {
       return 'Please enter a phone number';
     }
-    // Regex for African phone numbers (can be adjusted based on specific country requirements)
-    final phoneRegExp = RegExp(r'^\+(?:[0-9]●?){9,14}[0-9]$');
-    if (!phoneRegExp.hasMatch(value)) {
+
+    // Remove any spaces or formatting
+    String cleanedValue = value.replaceAll(RegExp(r'\s+'), '');
+
+    // Regex for African phone numbers
+    // Allows formats like +234801234567, +2348012345678
+    final phoneRegExp = RegExp(
+        r'^\+(?:234|233|254|255|256|257|258|260|261|262|263)[0-9]{9,10}$');
+
+    if (!phoneRegExp.hasMatch(cleanedValue)) {
       return 'Please enter a valid African phone number';
     }
+
     return null;
   }
 
@@ -81,11 +89,19 @@ class RegistrationProvider extends ChangeNotifier {
     if (value == null || value.isEmpty) {
       return 'Please enter a phone number';
     }
+
+    // Remove any spaces or formatting
+    String cleanedValue = value.replaceAll(RegExp(r'\s+'), '');
+
     // General international phone format
-    final phoneRegExp = RegExp(r'^\+[1-9]\d{6,14}$');
-    if (!phoneRegExp.hasMatch(value)) {
+    // Allows international numbers with 7-15 digits after country code
+    final phoneRegExp = RegExp(
+        r'^\+(?!234|233|254|255|256|257|258|260|261|262|263)[1-9]\d{6,14}$');
+
+    if (!phoneRegExp.hasMatch(cleanedValue)) {
       return 'Please enter a valid international phone number';
     }
+
     return null;
   }
 

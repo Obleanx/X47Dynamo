@@ -1,51 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kakra/SCREENS/Home_screens/market%20place/market_home_screen.dart';
 
 // Product Provider
 class ProductProvider with ChangeNotifier {
-  bool _isLoading = false;
+  final bool _isLoading = false;
   String? _error;
 
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> fetchProductsFromFirestore() async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      // Fetch listings from Firestore
-      final querySnapshot = await FirebaseFirestore.instance
-          .collection('listings')
-          .orderBy('timestamp', descending: true)
-          .get();
-
-      // Convert Firestore documents to Product objects
-      _products = querySnapshot.docs.map((doc) {
-        final data = doc.data();
-        return Product(
-          id: doc.id,
-          name: data['productName'] ?? 'Unnamed Product',
-          price: (data['price'] as num).toDouble(),
-          assetimage: data['imageUrls'] != null && data['imageUrls'].isNotEmpty
-              ? data['imageUrls'][0] // Use first image from the listing
-              : 'lib/images/placeholder.png', // Fallback placeholder
-          category: data['category'] ?? 'Uncategorized',
-        );
-      }).toList();
-
-      _isLoading = false;
-      notifyListeners();
-    } catch (e) {
-      _error = 'Failed to fetch products: ${e.toString()}';
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  List<Product> _products = [
+  final List<Product> _products = [
     Product(
       id: '1',
       name: 'Facewash',

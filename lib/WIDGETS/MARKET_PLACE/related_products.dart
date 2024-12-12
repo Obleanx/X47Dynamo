@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class RelatedProductItem extends StatelessWidget {
   final String imageUrl;
+
   final String name;
   final double price;
   final VoidCallback onTap;

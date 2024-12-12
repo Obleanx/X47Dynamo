@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 
 class ViewProduct {
   final String name;
+
   final double price;
   final String description;
   final List<String> images;
   final String sellerName;
   final String sellerJoinDate;
 
+  final String? sellerId; // Optional sellerId
+  final String? sellerEmail; // Optional sellerEmail
   ViewProduct({
     required this.name,
     required this.price,
@@ -15,11 +18,15 @@ class ViewProduct {
     required this.images,
     required this.sellerName,
     required this.sellerJoinDate,
+    this.sellerId, // Optional
+    this.sellerEmail, // Optional
   });
 
-  String? get userId => null;
+  // Getter for userId, can return sellerId or other logic
+  String? get userId => sellerId;
 
-  get sellerEmail => null;
+  // Explicitly typed getter for sellerEmail
+  String? get email => sellerEmail;
 }
 
 // ViewModel

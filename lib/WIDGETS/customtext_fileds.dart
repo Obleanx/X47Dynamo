@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:kakra/WIDGETS/password_validator.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
   final bool obscureText;
   final Function(String?) onSaved;
   final String? Function(String?)? validator;
+  final bool isPhoneNumber;
+  final bool isAfrican;
 
   const CustomTextField({
     super.key,
@@ -13,6 +15,8 @@ class CustomTextField extends StatefulWidget {
     this.obscureText = false,
     required this.onSaved,
     this.validator,
+    this.isPhoneNumber = false,
+    this.isAfrican = false,
   });
 
   @override
@@ -22,17 +26,113 @@ class CustomTextField extends StatefulWidget {
 class _CustomTextFieldState extends State<CustomTextField> {
   String? _errorText;
   final FocusNode _focusNode = FocusNode();
+  final TextEditingController _controller = TextEditingController();
+  String _countryCode = '+234'; // Default to Nigerian country code
+
+  // Lists of country codes
+  final List<String> _africanCountryCodes = [
+    'DZ',
+    'AO',
+    'BJ',
+    'BW',
+    'BF',
+    'BI',
+    'CM',
+    'CV',
+    'CF',
+    'TD',
+    'KM',
+    'CG',
+    'CD',
+    'DJ',
+    'EG',
+    'GQ',
+    'ER',
+    'ET',
+    'GA',
+    'GM',
+    'GH',
+    'GN',
+    'GW',
+    'CI',
+    'KE',
+    'LS',
+    'LR',
+    'LY',
+    'MG',
+    'MW',
+    'ML',
+    'MR',
+    'MU',
+    'MA',
+    'MZ',
+    'NA',
+    'NE',
+    'NG',
+    'RW',
+    'ST',
+    'SN',
+    'SC',
+    'SL',
+    'SO',
+    'ZA',
+    'SS',
+    'SD',
+    'SZ',
+    'TZ',
+    'TG',
+    'TN',
+    'UG',
+    'ZM',
+    'ZW',
+  ];
+
+  final List<String> _europeanCountryCodes = [
+    'AT',
+    'BE',
+    'BG',
+    'HR',
+    'CY',
+    'CZ',
+    'DK',
+    'EE',
+    'FI',
+    'FR',
+    'DE',
+    'GR',
+    'HU',
+    'IE',
+    'IT',
+    'LV',
+    'LT',
+    'LU',
+    'MT',
+    'NL',
+    'PL',
+    'PT',
+    'RO',
+    'SK',
+    'SI',
+    'ES',
+    'SE',
+  ];
 
   @override
   void initState() {
     super.initState();
     _focusNode.addListener(_onFocusChange);
+
+    // Set initial country code based on African or Foreign phone number
+    if (widget.isPhoneNumber) {
+      _countryCode = widget.isAfrican ? '+234' : '+44';
+    }
   }
 
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
+    _controller.dispose();
     super.dispose();
   }
 
@@ -44,8 +144,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
       });
     }
   }
-
-  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -60,29 +158,65 @@ class _CustomTextFieldState extends State<CustomTextField> {
             ),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: TextFormField(
-            controller: _controller,
-            focusNode: _focusNode,
-            obscureText: widget.obscureText,
-            decoration: InputDecoration(
-              labelText: widget.label,
-              labelStyle: TextStyle(
-                color: _errorText != null ? Colors.red : Colors.black,
-                fontSize: 13,
+          child: Row(
+            children: [
+              // Country Code Picker for Phone Numbers
+              if (widget.isPhoneNumber)
+                CountryCodePicker(
+                  onChanged: (countryCode) {
+                    setState(() {
+                      _countryCode = countryCode.dialCode ?? '+234';
+                    });
+                  },
+                  initialSelection: widget.isAfrican ? 'NG' : 'GB',
+                  favorite: widget.isAfrican
+                      ? ['NG', 'GH', 'KE', 'ZA']
+                      : ['GB', 'FR', 'DE'],
+                  showCountryOnly: false,
+                  showOnlyCountryWhenClosed: false,
+                  alignLeft: false,
+                  showFlag: true,
+                  enabled: true,
+                ),
+
+              // Expanded text field
+              Expanded(
+                child: TextFormField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  obscureText: widget.obscureText,
+                  decoration: InputDecoration(
+                    labelText: widget.label,
+                    labelStyle: TextStyle(
+                      color: _errorText != null ? Colors.red : Colors.black,
+                      fontSize: 13,
+                    ),
+                    border: InputBorder.none,
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                    fillColor: Colors.white,
+                    prefixText: widget.isPhoneNumber ? '$_countryCode ' : null,
+                  ),
+                  onSaved: (value) {
+                    // Combine country code with phone number for phone fields
+                    final processedValue = widget.isPhoneNumber
+                        ? '$_countryCode${value ?? ''}'
+                        : value;
+                    widget.onSaved(processedValue);
+                  },
+                  validator: widget.validator,
+                  keyboardType: widget.isPhoneNumber
+                      ? TextInputType.phone
+                      : TextInputType.text,
+                  onChanged: (value) {
+                    // Real-time validation
+                    setState(() {
+                      _errorText = widget.validator?.call(value);
+                    });
+                  },
+                ),
               ),
-              border: InputBorder.none,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-              fillColor: Colors.white,
-            ),
-            onSaved: widget.onSaved,
-            validator: widget.validator,
-            onChanged: (value) {
-              // Real-time validation
-              setState(() {
-                _errorText = widget.validator?.call(value);
-              });
-            },
+            ],
           ),
         ),
         if (_errorText != null)

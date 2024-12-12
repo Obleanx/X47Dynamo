@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:kakra/PROVIDERS/auth_provider.dart';
 import 'package:kakra/WIDGETS/custom_dropdown.dart';
 import 'package:kakra/WIDGETS/customtext_fileds.dart';
-import 'package:provider/provider.dart';
 
 class RegistrationForm extends StatelessWidget {
   const RegistrationForm({super.key});
@@ -38,6 +38,8 @@ class RegistrationForm extends StatelessWidget {
                 onSaved: (value) => provider.africanPhoneNumber = value,
                 validator: (value) =>
                     provider.validateAfricanPhoneNumber(value),
+                isPhoneNumber: true,
+                isAfrican: true,
               ),
               const SizedBox(height: 20),
               CustomTextField(
@@ -45,6 +47,8 @@ class RegistrationForm extends StatelessWidget {
                 onSaved: (value) => provider.foreignPhoneNumber = value,
                 validator: (value) =>
                     provider.validateForeignPhoneNumber(value),
+                isPhoneNumber: true,
+                isAfrican: false,
               ),
               const SizedBox(height: 25),
               CustomDropdown(
