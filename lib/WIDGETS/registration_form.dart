@@ -41,7 +41,7 @@ class RegistrationForm extends StatelessWidget {
                 isPhoneNumber: true,
                 isAfrican: true,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
               CustomTextField(
                 label: "Foreign Phone Number",
                 onSaved: (value) => provider.foreignPhoneNumber = value,

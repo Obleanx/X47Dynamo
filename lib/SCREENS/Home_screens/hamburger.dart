@@ -1,11 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakra/PROVIDERS/profile_provider.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:kakra/SCREENS/Home_screens/bottom_navBar/profile.dart';
 
 class Hamburger extends StatelessWidget {
   const Hamburger({super.key});
@@ -66,13 +68,26 @@ class Hamburger extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        const Text(
-                          'Edit your profile',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey,
+                        InkWell(
+                          onTap: () {
+                            // Navigate to the ProfileScreen
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const ProfileScreen()),
+                            );
+                            if (kDebugMode) {
+                              print('Edit your profile tapped');
+                            }
+                          },
+                          child: const Text(
+                            'Edit your profile',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
-                        ),
+                        )
                       ],
                     ),
                     const SizedBox(width: 40),

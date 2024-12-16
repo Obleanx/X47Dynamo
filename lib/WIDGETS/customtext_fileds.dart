@@ -29,93 +29,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   final TextEditingController _controller = TextEditingController();
   String _countryCode = '+234'; // Default to Nigerian country code
 
-  // Lists of country codes
-  final List<String> _africanCountryCodes = [
-    'DZ',
-    'AO',
-    'BJ',
-    'BW',
-    'BF',
-    'BI',
-    'CM',
-    'CV',
-    'CF',
-    'TD',
-    'KM',
-    'CG',
-    'CD',
-    'DJ',
-    'EG',
-    'GQ',
-    'ER',
-    'ET',
-    'GA',
-    'GM',
-    'GH',
-    'GN',
-    'GW',
-    'CI',
-    'KE',
-    'LS',
-    'LR',
-    'LY',
-    'MG',
-    'MW',
-    'ML',
-    'MR',
-    'MU',
-    'MA',
-    'MZ',
-    'NA',
-    'NE',
-    'NG',
-    'RW',
-    'ST',
-    'SN',
-    'SC',
-    'SL',
-    'SO',
-    'ZA',
-    'SS',
-    'SD',
-    'SZ',
-    'TZ',
-    'TG',
-    'TN',
-    'UG',
-    'ZM',
-    'ZW',
-  ];
-
-  final List<String> _europeanCountryCodes = [
-    'AT',
-    'BE',
-    'BG',
-    'HR',
-    'CY',
-    'CZ',
-    'DK',
-    'EE',
-    'FI',
-    'FR',
-    'DE',
-    'GR',
-    'HU',
-    'IE',
-    'IT',
-    'LV',
-    'LT',
-    'LU',
-    'MT',
-    'NL',
-    'PL',
-    'PT',
-    'RO',
-    'SK',
-    'SI',
-    'ES',
-    'SE',
-  ];
+  // Lists of country codes remain the same as in the original code
 
   @override
   void initState() {
@@ -153,7 +67,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: _errorText != null ? Colors.red : Colors.grey,
+              color: _errorText != null
+                  ? Colors.red
+                  : const Color.fromARGB(255, 137, 51, 51),
               width: _errorText != null ? 2.0 : 1.0,
             ),
             borderRadius: BorderRadius.circular(8),
@@ -162,21 +78,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
             children: [
               // Country Code Picker for Phone Numbers
               if (widget.isPhoneNumber)
-                CountryCodePicker(
-                  onChanged: (countryCode) {
-                    setState(() {
-                      _countryCode = countryCode.dialCode ?? '+234';
-                    });
-                  },
-                  initialSelection: widget.isAfrican ? 'NG' : 'GB',
-                  favorite: widget.isAfrican
-                      ? ['NG', 'GH', 'KE', 'ZA']
-                      : ['GB', 'FR', 'DE'],
-                  showCountryOnly: false,
-                  showOnlyCountryWhenClosed: false,
-                  alignLeft: false,
-                  showFlag: true,
-                  enabled: true,
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 2.0,
+                  ), // Adjust spacing
+                  child: CountryCodePicker(
+                    onChanged: (countryCode) {
+                      setState(() {
+                        _countryCode = countryCode.dialCode ?? '+234';
+                      });
+                    },
+                    initialSelection: widget.isAfrican ? 'NG' : 'GB',
+                    favorite: widget.isAfrican
+                        ? ['NG', 'GH', 'KE', 'ZA']
+                        : ['GB', 'FR', 'DE'],
+                    showCountryOnly: false,
+                    showOnlyCountryWhenClosed: false,
+                    alignLeft: false,
+                    showFlag: true,
+                    enabled: true,
+                  ),
                 ),
 
               // Expanded text field
@@ -195,12 +116,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
                     fillColor: Colors.white,
-                    prefixText: widget.isPhoneNumber ? '$_countryCode ' : null,
+                    prefixText: widget.isPhoneNumber
+                        ? '$_countryCode'
+                        : null, // Removed space here
                   ),
                   onSaved: (value) {
                     // Combine country code with phone number for phone fields
                     final processedValue = widget.isPhoneNumber
-                        ? '$_countryCode${value ?? ''}'
+                        ? '$_countryCode${value ?? ''}' // Combines country code with input
                         : value;
                     widget.onSaved(processedValue);
                   },

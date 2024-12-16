@@ -93,3 +93,69 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
+// Flutter Build Commands Cheat Sheet
+
+// 1. Basic Build Commands:
+// Debug APK
+// flutter build apk
+
+// Release APK
+// flutter build apk --release
+
+// Profile APK
+// flutter build apk --profile
+
+// 2. Architecture-Specific Builds:
+// ARM 64-bit
+// flutter build apk --target-platform=android-arm64
+
+// ARM 32-bit
+// flutter build apk --target-platform=android-arm
+
+// 3. Split APK (Recommended for Release)
+// flutter build apk --release --split-per-abi
+
+// 4. Web Build
+// flutter build web
+
+// 5. iOS Build
+// flutter build ios
+
+// 6. Windows Build
+// flutter build windows
+
+// 7. macOS Build
+// flutter build macos
+
+// 8. Linux Build
+// flutter build linux
+
+// 9. Advanced Build Options:
+// Build with specific flavor
+// flutter build apk --flavor production
+
+// Build with dart define
+// flutter build apk --dart-define=FLAVOR=production
+
+// Specify output directory
+// flutter build apk --output-dir=/path/to/your/directory
+
+// 10. Pre-Build Cleanup
+// flutter clean   // Always run before building
+
+// 11. Get Dependencies
+// flutter pub get
+
+// 12. Verbose Build (for debugging)
+// flutter build apk --verbose
+
+// 13. Build with specific dart SDK
+// flutter build apk --dart-sdk=/path/to/dart-sdk
+
+// Pro Tips:
+// - Ensure keystore is configured for release builds
+// - Check android/app/build.gradle for signing configurations
+// - Use --split-per-abi for optimized app size on different devices
+
+

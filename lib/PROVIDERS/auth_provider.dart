@@ -73,13 +73,32 @@ class RegistrationProvider extends ChangeNotifier {
     // Remove any spaces or formatting
     String cleanedValue = value.replaceAll(RegExp(r'\s+'), '');
 
-    // Regex for African phone numbers
-    // Allows formats like +234801234567, +2348012345678
-    final phoneRegExp = RegExp(
-        r'^\+(?:234|233|254|255|256|257|258|260|261|262|263)[0-9]{9,10}$');
+    // Specific country code to max digit mappings
+    final countryCodeRules = {
+      '+234': 10, // Nigeria (10 digits after country code)
+      '+233': 9, // Ghana (9 digits after country code)
+      '+254': 9, // Kenya (9 digits after country code)
+      '+255': 9, // Tanzania (9 digits after country code)
+      '+256': 9, // Uganda (9 digits after country code)
+      '+257': 8, // Burundi (8 digits after country code)
+      '+258': 9, // Mozambique (9 digits after country code)
+      '+260': 9, // Zambia (9 digits after country code)
+      '+261': 9, // Madagascar (9 digits after country code)
+      '+262': 9, // Reunion (9 digits after country code)
+      '+263': 9, // Zimbabwe (9 digits after country code)
+    };
 
-    if (!phoneRegExp.hasMatch(cleanedValue)) {
-      return 'Please enter a valid African phone number';
+    // Check if the number is only digits
+    if (!RegExp(r'^\d+$').hasMatch(cleanedValue)) {
+      return 'Phone number must contain only digits';
+    }
+
+    // Default to Nigerian country code if not specified in the custom TextField
+    String countryCode = '+234';
+
+    // Check if the number of digits matches the country's rule
+    if (cleanedValue.length != countryCodeRules[countryCode]) {
+      return 'Phone number must be ${countryCodeRules[countryCode]} digits long for ${countryCode.substring(1)} country';
     }
 
     return null;
@@ -93,13 +112,26 @@ class RegistrationProvider extends ChangeNotifier {
     // Remove any spaces or formatting
     String cleanedValue = value.replaceAll(RegExp(r'\s+'), '');
 
-    // General international phone format
-    // Allows international numbers with 7-15 digits after country code
-    final phoneRegExp = RegExp(
-        r'^\+(?!234|233|254|255|256|257|258|260|261|262|263)[1-9]\d{6,14}$');
+    // Specific country code to max digit mappings
+    final countryCodeRules = {
+      '+44': 10, // UK (10 digits after country code)
+      '+353': 9, // Ireland (9 digits after country code)
+      '+33': 9, // France (9 digits after country code)
+      '+49': 10, // Germany (10 digits after country code)
+      '+1': 10, // US/Canada (10 digits after country code)
+    };
 
-    if (!phoneRegExp.hasMatch(cleanedValue)) {
-      return 'Please enter a valid international phone number';
+    // Check if the number is only digits
+    if (!RegExp(r'^\d+$').hasMatch(cleanedValue)) {
+      return 'Phone number must contain only digits';
+    }
+
+    // Default to UK country code if not specified in the custom TextField
+    String countryCode = '+44';
+
+    // Check if the number of digits matches the country's rule
+    if (cleanedValue.length != countryCodeRules[countryCode]) {
+      return 'Phone number must be ${countryCodeRules[countryCode]} digits long for ${countryCode.substring(1)} country';
     }
 
     return null;

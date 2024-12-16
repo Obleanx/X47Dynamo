@@ -53,9 +53,9 @@ class ProfileProvider extends ChangeNotifier {
       setLoading(true);
       final user = FirebaseAuth.instance.currentUser;
 
-      if (kDebugMode) {
-        print('Fetching data for user: ${user?.uid}');
-      }
+      print('=============== Fetching User Data ===============');
+      print('Current User UID: ${user?.uid}');
+      print('Current User Email: ${user?.email}');
 
       if (user != null) {
         final userData = await FirebaseFirestore.instance
@@ -63,36 +63,29 @@ class ProfileProvider extends ChangeNotifier {
             .doc(user.uid)
             .get();
 
+        print('Firestore Document Exists: ${userData.exists}');
+
         if (userData.exists) {
-          if (kDebugMode) {
-            print('User data found: ${userData.data()}');
-          }
+          final data = userData.data();
+          print('Full User Data: $data');
 
-          _firstName = userData.data()?['firstName']?.toString() ?? '';
-          _lastName = userData.data()?['lastName']?.toString() ?? '';
-          _profileImageUrl = userData.data()?['profileImageUrl']?.toString();
+          _firstName = data?['firstName']?.toString() ?? '';
+          _lastName = data?['lastName']?.toString() ?? '';
+          _profileImageUrl = data?['profileImageUrl']?.toString();
 
-          if (kDebugMode) {
-            print('First Name: $firstName');
-            print('Last Name: $lastName');
-            print('Profile URL: $_profileImageUrl');
-          }
+          print('Extracted First Name: $_firstName');
+          print('Extracted Last Name: $_lastName');
+          print('Extracted Profile Image URL: $_profileImageUrl');
 
           notifyListeners();
         } else {
-          if (kDebugMode) {
-            print('No user data found in Firestore');
-          }
+          print('No user data found in Firestore for UID: ${user.uid}');
         }
       } else {
-        if (kDebugMode) {
-          print('No authenticated user found');
-        }
+        print('No authenticated user found');
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching user data: $e');
-      }
+      print('Error in fetchUserData: $e');
     } finally {
       setLoading(false);
     }

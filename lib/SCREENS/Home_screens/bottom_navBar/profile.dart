@@ -274,7 +274,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
-                      label: 'Your current HomeTown in Africa',
+                      label: 'State/Region you reside',
+                      onSaved: (value) => _formData['state'] = value ?? '',
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      label: 'Country',
+                      onSaved: (value) => _formData['country'] = value ?? '',
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      label: 'Permanent Address',
+                      // hint: 'Full detailed address',
+                      onSaved: (value) =>
+                          _formData['permanentAddress'] = value ?? '',
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      label: 'HomeTown in Africa(country & state)',
                       onSaved: (value) => _formData['location'] = value ?? '',
                     ),
                     const SizedBox(height: 16),
@@ -289,7 +306,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Save Button for storing the user data in the database.
                     // Save Button for storing the user data in the database.
                     SizedBox(
                       width: double.infinity,
@@ -341,6 +357,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                     'gender': _formData['gender'] ?? '',
                                     'language': _formData['language'] ?? '',
                                     'location': _formData['location'] ?? '',
+                                    'state': _formData['state'] ?? '',
+                                    'country': _formData['country'] ?? '',
+                                    'permanentAddress':
+                                        _formData['permanentAddress'] ?? '',
                                     'homeTown': _formData['homeTown'] ?? '',
                                     'interests': _formData['interests'] ?? '',
                                     'skills': _formData['skills'] ?? '',
