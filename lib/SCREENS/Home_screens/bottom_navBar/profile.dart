@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
+import 'package:kakra/CORE/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakra/SERVICES/media_services.dart';
 import 'package:kakra/WIDGETS/customtext_fileds.dart';
@@ -241,14 +242,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             .validateName(value, isRequired: true),
                         autofillHints: const [AutofillHints.givenName],
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.person_outline),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\s]')),
                           LengthLimitingTextInputFormatter(50),
                         ],
-                        helperText:
-                            'Enter your first name as it appears on official documents',
+                        // helperText:
+                        // 'Enter your first name as it appears on official documents',
                       ),
                       const SizedBox(height: 16),
 
@@ -263,71 +263,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             .validateName(value, isRequired: true),
                         autofillHints: const [AutofillHints.familyName],
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.person),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\s]')),
                           LengthLimitingTextInputFormatter(50),
                         ],
-                        helperText:
-                            'Enter your last name as it appears on official documents',
+                        // helperText:
+                        // 'Enter your last name as it appears on official documents',
                       ),
-                      const SizedBox(height: 16),
 
-                      ProfileTextField(
-                        label: 'Email Address',
-                        providerKey: 'email',
-                        isRequired: true,
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (value) => Provider.of<UserProfileProvider>(
-                                context,
-                                listen: false)
-                            .validateEmail(value),
-                        autofillHints: const [AutofillHints.email],
-                        textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.email_outlined),
-                        inputFormatters: [
-                          LengthLimitingTextInputFormatter(100),
-                        ],
-                        helperText:
-                            'Enter a valid email address for communication',
-                      ),
-                      const SizedBox(height: 16),
-                      const SizedBox(height: 16),
-                      ProfileTextField(
-                        label: 'African Phone Number',
-                        providerKey: 'AfricaPhone',
-                        keyboardType: TextInputType.phone,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10),
-                        ],
-                        validator: (value) => Provider.of<UserProfileProvider>(
-                                context,
-                                listen: false)
-                            .validatePhoneNumber(value),
-                        isRequired: true,
-                        prefixIcon: const Icon(Icons.phone),
-                        helperText: 'Enter your 10-digit phone number',
-                      ),
-                      const SizedBox(height: 16),
-
-                      ProfileTextField(
-                        label: 'Foreign Phone Number',
-                        providerKey: 'foreignPhone',
-                        keyboardType: TextInputType.phone,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10),
-                        ],
-                        validator: (value) => Provider.of<UserProfileProvider>(
-                                context,
-                                listen: false)
-                            .validatePhoneNumber(value),
-                        isRequired: true,
-                        prefixIcon: const Icon(Icons.phone),
-                        helperText: 'Enter your 10-digit phone number',
-                      ),
                       const SizedBox(height: 16),
                       ProfileTextField(
                         label: 'Professional Background',
@@ -370,13 +314,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             null, // Optional field, no strict validation
                         autofillHints: const [AutofillHints.language],
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.language),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\s]')),
                           LengthLimitingTextInputFormatter(50),
                         ],
-                        helperText: 'Enter the languages you speak fluently',
+                        // helperText: 'Enter the languages you speak fluently',
                       ),
                       const SizedBox(height: 16),
 
@@ -391,11 +334,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ).validateLocation(value, isRequired: true),
                         autofillHints: const [AutofillHints.fullStreetAddress],
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.location_on_outlined),
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(100),
                         ],
-                        helperText: 'Enter your current address or location',
+                        // helperText: 'Enter your current address or location',
                       ),
                       const SizedBox(height: 16),
 
@@ -410,13 +352,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ).validateLocation(value, isRequired: true),
                         autofillHints: const [AutofillHints.addressState],
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.map_outlined),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\s]')),
                           LengthLimitingTextInputFormatter(50),
                         ],
-                        helperText: 'Enter your state or region of residence',
                       ),
                       const SizedBox(height: 16),
 
@@ -431,13 +371,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ).validateLocation(value, isRequired: true),
                         autofillHints: const [AutofillHints.countryName],
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.flag_outlined),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\s]')),
                           LengthLimitingTextInputFormatter(50),
                         ],
-                        helperText: 'Enter the country you currently reside in',
+                        // helperText: 'Enter the country you currently reside in',
                       ),
                       const SizedBox(height: 16),
 
@@ -452,11 +391,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ).validateLocation(value, isRequired: true),
                         autofillHints: const [AutofillHints.postalAddress],
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.home_outlined),
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(200),
                         ],
-                        helperText: 'Enter your permanent address',
+                        // helperText: 'Enter your permanent address',
                       ),
                       const SizedBox(height: 16),
 
@@ -473,14 +411,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           AutofillHints.addressCityAndState
                         ],
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.place_outlined),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\s,]')),
                           LengthLimitingTextInputFormatter(100),
                         ],
-                        helperText:
-                            'Enter your hometown in Africa (country & state)',
+                        // helperText:
+                        // 'Enter your hometown in Africa (country & state)',
                       ),
                       const SizedBox(height: 16),
 
@@ -497,13 +434,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           AutofillHints.newUsername
                         ], // Optional
                         textInputAction: TextInputAction.next,
-                        prefixIcon: const Icon(Icons.interests_outlined),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\s,]')),
                           LengthLimitingTextInputFormatter(200),
                         ],
-                        helperText: 'Enter your interests (comma-separated)',
+                        // helperText: 'Enter your interests (comma-separated)',
                       ),
                       const SizedBox(height: 16),
 
@@ -520,13 +456,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           AutofillHints.jobTitle
                         ], // Optional
                         textInputAction: TextInputAction.done,
-                        prefixIcon: const Icon(Icons.handyman_outlined),
                         inputFormatters: [
                           FilteringTextInputFormatter.allow(
                               RegExp(r'[a-zA-Z\s,]')),
                           LengthLimitingTextInputFormatter(200),
                         ],
-                        helperText: 'Enter your skills (comma-separated)',
+                        // helperText: 'Enter your skills (comma-separated)',
                       ),
                       const SizedBox(height: 24),
 
@@ -548,6 +483,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                         }
                                       }
                                     },
+                              style: ElevatedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 15, horizontal: 16),
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: Colors.white,
+                                elevation: 5,
+                              ),
                               child: provider.isLoading
                                   ? const CircularProgressIndicator()
                                   : const Text('Save Profile'),

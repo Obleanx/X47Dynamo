@@ -29,30 +29,30 @@ class UserProfileProvider with ChangeNotifier {
     return null;
   }
 
-  String? validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return 'Email is required';
-    }
-    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-    if (!emailRegex.hasMatch(value.trim())) {
-      return 'Enter a valid email address';
-    }
-    return null;
-  }
+  // String? validateEmail(String? value) {
+  // if (value == null || value.trim().isEmpty) {
+  // return 'Email is required';
+  // }
+  // final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+  // if (!emailRegex.hasMatch(value.trim())) {
+  // return 'Enter a valid email address';
+  // }
+  // return null;
+  // }
 
-  String? validatePhoneNumber(String? value, {bool isRequired = false}) {
-    if (isRequired && (value == null || value.trim().isEmpty)) {
-      return 'Phone number is required';
-    }
-    if (value != null && value.isNotEmpty) {
-      // Remove any non-digit characters
-      final cleanedNumber = value.replaceAll(RegExp(r'\D'), '');
-      if (cleanedNumber.length < 10 || cleanedNumber.length > 15) {
-        return 'Invalid phone number length';
-      }
-    }
-    return null;
-  }
+  // String? validatePhoneNumber(String? value, {bool isRequired = false}) {
+  // if (isRequired && (value == null || value.trim().isEmpty)) {
+  // return 'Phone number is required';
+  // }
+  // if (value != null && value.isNotEmpty) {
+  // Remove any non-digit characters
+  // final cleanedNumber = value.replaceAll(RegExp(r'\D'), '');
+  // if (cleanedNumber.length < 10 || cleanedNumber.length > 15) {
+  // return 'Invalid phone number length';
+  // }
+  // }
+  // return null;
+  // }
 
   String? validateLocation(String? value, {bool isRequired = false}) {
     if (isRequired && (value == null || value.trim().isEmpty)) {
@@ -95,11 +95,11 @@ class UserProfileProvider with ChangeNotifier {
         'firstName', validateName(_formData['firstName'], isRequired: true));
     _validateField(
         'lastName', validateName(_formData['lastName'], isRequired: true));
-    _validateField('email', validateEmail(_formData['email']));
-    _validateField(
-        'africanPhone', validatePhoneNumber(_formData['africanPhone']));
-    _validateField(
-        'foreignPhone', validatePhoneNumber(_formData['foreignPhone']));
+    // _validateField('email', validateEmail(_formData['email']));
+    // _validateField(
+    // 'africanPhone', validatePhoneNumber(_formData['africanPhone']));
+    // _validateField(
+    // 'foreignPhone', validatePhoneNumber(_formData['foreignPhone']));
     _validateField('location', validateLocation(_formData['location']));
     _validateField('state', validateLocation(_formData['state']));
     _validateField('country', validateLocation(_formData['country']));
@@ -144,9 +144,9 @@ class UserProfileProvider with ChangeNotifier {
       final userData = {
         'firstName': _formData['firstName'],
         'lastName': _formData['lastName'],
-        'email': _formData['email'],
-        'africanPhone': _formData['africanPhone'] ?? '',
-        'foreignPhone': _formData['foreignPhone'] ?? '',
+        // 'email': _formData['email'],
+        // 'africanPhone': _formData['africanPhone'] ?? '',
+        // 'foreignPhone': _formData['foreignPhone'] ?? '',
         'background': _formData['background'] ?? '',
         'gender': _formData['gender'] ?? '',
         'language': _formData['language'] ?? '',

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kakra/WIDGETS/home_screen_widgets/category_slider.dart';
-import 'package:provider/provider.dart';
 
 class HomeProvider extends ChangeNotifier {
   int _selectedCategoryIndex = 0;

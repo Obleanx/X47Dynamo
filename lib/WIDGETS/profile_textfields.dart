@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:kakra/CORE/constants.dart';
 import 'package:kakra/PROVIDERS/profile_update_provider.dart';
 
 class ProfileTextField extends StatefulWidget {
@@ -85,13 +86,13 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
         errorMessage =
             provider.validateName(value, isRequired: widget.isRequired);
         break;
-      case 'email address':
-        errorMessage = provider.validateEmail(value);
-        break;
-      case 'african phone number':
-      case 'foreign phone number':
-        errorMessage = provider.validatePhoneNumber(value);
-        break;
+      // case 'email address':
+      // errorMessage = provider.validateEmail(value);
+      // break;
+      // case 'african phone number':
+      // case 'foreign phone number':
+      // errorMessage = provider.validatePhoneNumber(value);
+      // break;
       case 'current location':
       case 'state/region you reside':
       case 'country':
@@ -156,7 +157,6 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
           child: TextFormField(
             textInputAction: widget.textInputAction, // TextInputAction
             autofillHints: widget.autofillHints, // AutofillHints
-
             controller: _controller,
             focusNode: _focusNode,
             keyboardType: widget.keyboardType ?? TextInputType.text,
@@ -169,8 +169,10 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
                 color: _errorText != null
                     ? Colors.red
                     : _isFocused
-                        ? Colors.blue
-                        : Colors.grey[600],
+                        ? AppColors.primary
+                        : Colors.black,
+                fontSize: 12,
+                //fontWeight: FontWeight.bold,
               ),
               prefixIcon: widget.prefixIcon,
               helperText: widget.helperText,
@@ -179,7 +181,7 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
-                vertical: 8,
+                vertical: 4,
               ),
             ),
             onSaved: (value) {
@@ -196,6 +198,7 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
               style: const TextStyle(
                 color: Colors.red,
                 fontSize: 12,
+                height: 1.2,
               ),
             ),
           ),
@@ -211,10 +214,6 @@ List<String> _getAutofillHints(String label) {
       return [AutofillHints.givenName];
     case 'last name':
       return [AutofillHints.familyName];
-    case 'email address':
-      return [AutofillHints.email];
-    case 'phone number':
-      return [AutofillHints.telephoneNumber];
     default:
       return [];
   }
