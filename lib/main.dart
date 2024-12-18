@@ -17,6 +17,7 @@ import 'package:kakra/SCREENS/all_onboarding_screens.dart';
 import 'package:kakra/PROVIDERS/market_place_provider.dart';
 import 'package:kakra/PROVIDERS/sellerlisting_provider.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
+import 'package:kakra/PROVIDERS/profile_update_provider.dart';
 import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
 import 'package:kakra/PROVIDERS/product_description_provider.dart';
 import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
@@ -49,6 +50,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => PostProvider()),
         ChangeNotifierProvider(create: (_) => PostProvider2()),
         ChangeNotifierProvider(create: (_) => FirebaseProductProvider()),
+        ChangeNotifierProvider(create: (_) => UserProfileProvider()),
 
         // Add this line
       ],

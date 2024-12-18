@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -231,51 +232,101 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       // Personal Information Fields
                       ProfileTextField(
                         label: 'First Name',
-                        providerKey:
-                            'firstName', // Specify the key in the provider
+                        providerKey: 'firstName',
                         isRequired: true,
+                        keyboardType: TextInputType.name,
                         validator: (value) => Provider.of<UserProfileProvider>(
                                 context,
                                 listen: false)
                             .validateName(value, isRequired: true),
+                        autofillHints: const [AutofillHints.givenName],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.person_outline),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\s]')),
+                          LengthLimitingTextInputFormatter(50),
+                        ],
+                        helperText:
+                            'Enter your first name as it appears on official documents',
                       ),
                       const SizedBox(height: 16),
+
                       ProfileTextField(
                         label: 'Last Name',
                         providerKey: 'lastName',
                         isRequired: true,
+                        keyboardType: TextInputType.name,
                         validator: (value) => Provider.of<UserProfileProvider>(
                                 context,
                                 listen: false)
                             .validateName(value, isRequired: true),
+                        autofillHints: const [AutofillHints.familyName],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.person),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\s]')),
+                          LengthLimitingTextInputFormatter(50),
+                        ],
+                        helperText:
+                            'Enter your last name as it appears on official documents',
                       ),
                       const SizedBox(height: 16),
+
                       ProfileTextField(
                         label: 'Email Address',
                         providerKey: 'email',
                         isRequired: true,
+                        keyboardType: TextInputType.emailAddress,
                         validator: (value) => Provider.of<UserProfileProvider>(
                                 context,
                                 listen: false)
                             .validateEmail(value),
+                        autofillHints: const [AutofillHints.email],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(100),
+                        ],
+                        helperText:
+                            'Enter a valid email address for communication',
                       ),
+                      const SizedBox(height: 16),
                       const SizedBox(height: 16),
                       ProfileTextField(
                         label: 'African Phone Number',
-                        providerKey: 'africanPhone',
-                        validator: (value) => Provider.of<UserProfileProvider>(
-                                context,
-                                listen: false)
-                            .validatePhoneNumber(value, isRequired: true),
-                      ),
-                      const SizedBox(height: 16),
-                      ProfileTextField(
-                        label: 'Foreign Phone Number',
-                        providerKey: 'foreignPhone',
+                        providerKey: 'AfricaPhone',
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                         validator: (value) => Provider.of<UserProfileProvider>(
                                 context,
                                 listen: false)
                             .validatePhoneNumber(value),
+                        isRequired: true,
+                        prefixIcon: const Icon(Icons.phone),
+                        helperText: 'Enter your 10-digit phone number',
+                      ),
+                      const SizedBox(height: 16),
+
+                      ProfileTextField(
+                        label: 'Foreign Phone Number',
+                        providerKey: 'foreignPhone',
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        validator: (value) => Provider.of<UserProfileProvider>(
+                                context,
+                                listen: false)
+                            .validatePhoneNumber(value),
+                        isRequired: true,
+                        prefixIcon: const Icon(Icons.phone),
+                        helperText: 'Enter your 10-digit phone number',
                       ),
                       const SizedBox(height: 16),
                       ProfileTextField(
@@ -309,45 +360,173 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       const SizedBox(height: 16),
-                      const ProfileTextField(
+
+                      ProfileTextField(
                         label: 'Language',
                         providerKey: 'language',
+                        isRequired: false,
+                        keyboardType: TextInputType.text,
+                        validator: (value) =>
+                            null, // Optional field, no strict validation
+                        autofillHints: const [AutofillHints.language],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.language),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\s]')),
+                          LengthLimitingTextInputFormatter(50),
+                        ],
+                        helperText: 'Enter the languages you speak fluently',
                       ),
-
                       const SizedBox(height: 16),
-                      const ProfileTextField(
+
+                      ProfileTextField(
                         label: 'Current Location',
                         providerKey: 'location',
+                        isRequired: true,
+                        keyboardType: TextInputType.streetAddress,
+                        validator: (value) => Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        ).validateLocation(value, isRequired: true),
+                        autofillHints: const [AutofillHints.fullStreetAddress],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.location_on_outlined),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(100),
+                        ],
+                        helperText: 'Enter your current address or location',
                       ),
                       const SizedBox(height: 16),
-                      const ProfileTextField(
+
+                      ProfileTextField(
                         label: 'State/Region you reside',
                         providerKey: 'state',
+                        isRequired: true,
+                        keyboardType: TextInputType.text,
+                        validator: (value) => Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        ).validateLocation(value, isRequired: true),
+                        autofillHints: const [AutofillHints.addressState],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.map_outlined),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\s]')),
+                          LengthLimitingTextInputFormatter(50),
+                        ],
+                        helperText: 'Enter your state or region of residence',
                       ),
                       const SizedBox(height: 16),
-                      const ProfileTextField(
+
+                      ProfileTextField(
                         label: 'Country',
                         providerKey: 'country',
+                        isRequired: true,
+                        keyboardType: TextInputType.text,
+                        validator: (value) => Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        ).validateLocation(value, isRequired: true),
+                        autofillHints: const [AutofillHints.countryName],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.flag_outlined),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\s]')),
+                          LengthLimitingTextInputFormatter(50),
+                        ],
+                        helperText: 'Enter the country you currently reside in',
                       ),
                       const SizedBox(height: 16),
-                      const ProfileTextField(
+
+                      ProfileTextField(
                         label: 'Permanent Address',
                         providerKey: 'permanentAddress',
+                        isRequired: true,
+                        keyboardType: TextInputType.streetAddress,
+                        validator: (value) => Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        ).validateLocation(value, isRequired: true),
+                        autofillHints: const [AutofillHints.postalAddress],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.home_outlined),
+                        inputFormatters: [
+                          LengthLimitingTextInputFormatter(200),
+                        ],
+                        helperText: 'Enter your permanent address',
                       ),
                       const SizedBox(height: 16),
-                      const ProfileTextField(
+
+                      ProfileTextField(
                         label: 'HomeTown in Africa (country & state)',
                         providerKey: 'hometown',
+                        isRequired: true,
+                        keyboardType: TextInputType.text,
+                        validator: (value) => Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        ).validateLocation(value, isRequired: true),
+                        autofillHints: const [
+                          AutofillHints.addressCityAndState
+                        ],
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.place_outlined),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\s,]')),
+                          LengthLimitingTextInputFormatter(100),
+                        ],
+                        helperText:
+                            'Enter your hometown in Africa (country & state)',
                       ),
                       const SizedBox(height: 16),
-                      const ProfileTextField(
+
+                      ProfileTextField(
                         label: 'Interests',
                         providerKey: 'interests',
+                        isRequired: false,
+                        keyboardType: TextInputType.text,
+                        validator: (value) => Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        ).validateSkillsOrInterests(value),
+                        autofillHints: const [
+                          AutofillHints.newUsername
+                        ], // Optional
+                        textInputAction: TextInputAction.next,
+                        prefixIcon: const Icon(Icons.interests_outlined),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\s,]')),
+                          LengthLimitingTextInputFormatter(200),
+                        ],
+                        helperText: 'Enter your interests (comma-separated)',
                       ),
                       const SizedBox(height: 16),
-                      const ProfileTextField(
+
+                      ProfileTextField(
                         label: 'Skills',
                         providerKey: 'skills',
+                        isRequired: false,
+                        keyboardType: TextInputType.text,
+                        validator: (value) => Provider.of<UserProfileProvider>(
+                          context,
+                          listen: false,
+                        ).validateSkillsOrInterests(value),
+                        autofillHints: const [
+                          AutofillHints.jobTitle
+                        ], // Optional
+                        textInputAction: TextInputAction.done,
+                        prefixIcon: const Icon(Icons.handyman_outlined),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z\s,]')),
+                          LengthLimitingTextInputFormatter(200),
+                        ],
+                        helperText: 'Enter your skills (comma-separated)',
                       ),
                       const SizedBox(height: 24),
 

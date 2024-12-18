@@ -15,6 +15,9 @@ class ProfileTextField extends StatefulWidget {
   final bool enableSuggestions;
   final String providerKey; // New parameter to specify the key in the provider
 
+  final Iterable<String>? autofillHints; // Optional autofillHints
+  final TextInputAction? textInputAction; // Optional textInputAction
+
   const ProfileTextField({
     Key? key,
     required this.label,
@@ -27,6 +30,8 @@ class ProfileTextField extends StatefulWidget {
     this.prefixIcon,
     this.helperText,
     this.enableSuggestions = true,
+    this.autofillHints, // Optional
+    this.textInputAction, // Optional
   }) : super(key: key);
 
   @override
@@ -43,6 +48,13 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
   void initState() {
     super.initState();
     _focusNode.addListener(_onFocusChange);
+
+    // Retrieve initial value from provider if exists
+    final provider = Provider.of<UserProfileProvider>(context, listen: false);
+    final initialValue = provider.formData[widget.providerKey];
+    if (initialValue != null) {
+      _controller.text = initialValue;
+    }
   }
 
   @override
@@ -93,7 +105,15 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
         // For other fields, use custom validator if provided
         errorMessage = widget.validator?.call(value);
     }
-
+    // More robust error handling
+    try {
+      switch (widget.label.toLowerCase()) {
+        // Your existing switch cases
+      }
+    } catch (e) {
+      errorMessage = 'Validation error occurred';
+      // Optionally log the error
+    }
     setState(() {
       _errorText = errorMessage;
     });
@@ -134,6 +154,9 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
                 : [],
           ),
           child: TextFormField(
+            textInputAction: widget.textInputAction, // TextInputAction
+            autofillHints: widget.autofillHints, // AutofillHints
+
             controller: _controller,
             focusNode: _focusNode,
             keyboardType: widget.keyboardType ?? TextInputType.text,
@@ -156,7 +179,7 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
-                vertical: 16,
+                vertical: 8,
               ),
             ),
             onSaved: (value) {
@@ -178,5 +201,21 @@ class _ProfileTextFieldState extends State<ProfileTextField> {
           ),
       ],
     );
+  }
+}
+
+// Helper method
+List<String> _getAutofillHints(String label) {
+  switch (label.toLowerCase()) {
+    case 'first name':
+      return [AutofillHints.givenName];
+    case 'last name':
+      return [AutofillHints.familyName];
+    case 'email address':
+      return [AutofillHints.email];
+    case 'phone number':
+      return [AutofillHints.telephoneNumber];
+    default:
+      return [];
   }
 }
