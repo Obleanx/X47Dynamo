@@ -92,69 +92,50 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Modify your _buildFirebasePosts method to include dynamic profile image fetching
 Widget _buildFirebasePosts(PostProvider2 postProvider) {
-  return FutureBuilder<Stream<QuerySnapshot>>(
-    future: postProvider.getLocationPrioritizedPosts(),
-    builder: (context, locationStreamSnapshot) {
-      if (locationStreamSnapshot.connectionState == ConnectionState.waiting) {
+  return StreamBuilder<QuerySnapshot>(
+    stream: postProvider.getPosts(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
         return const Center(child: CircularProgressIndicator());
       }
 
-      if (locationStreamSnapshot.hasError) {
-        return Center(child: Text('Error: ${locationStreamSnapshot.error}'));
+      if (snapshot.hasError) {
+        return Center(child: Text('Error: ${snapshot.error}'));
       }
 
-      if (!locationStreamSnapshot.hasData) {
-        return const Center(child: Text('Failed to load posts'));
+      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+        return const Center(child: Text('No posts yet'));
       }
 
-      return StreamBuilder<QuerySnapshot>(
-        stream: locationStreamSnapshot.data,
-        builder: (context, postSnapshot) {
-          if (postSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: snapshot.data!.docs.length,
+        itemBuilder: (context, index) {
+          var postData =
+              snapshot.data!.docs[index].data() as Map<String, dynamic>;
+          postData['postId'] = snapshot.data!.docs[index].id;
 
-          if (postSnapshot.hasError) {
-            return Center(child: Text('Error: ${postSnapshot.error}'));
-          }
+          return FutureBuilder<String?>(
+            future: fetchUserProfileImage(postData['userId']),
+            builder: (context, profileImageSnapshot) {
+              if (profileImageSnapshot.hasData &&
+                  profileImageSnapshot.data != null) {
+                postData['userProfilePic'] = profileImageSnapshot.data;
+              }
 
-          if (!postSnapshot.hasData || postSnapshot.data!.docs.isEmpty) {
-            return const Center(child: Text('No posts yet'));
-          }
+              if (kDebugMode) {
+                print('Post Data: $postData');
+              }
 
-          return ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: postSnapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var postData =
-                  postSnapshot.data!.docs[index].data() as Map<String, dynamic>;
-              postData['postId'] = postSnapshot.data!.docs[index].id;
-
-              return FutureBuilder<String?>(
-                future: fetchUserProfileImage(postData['userId']),
-                builder: (context, profileImageSnapshot) {
-                  if (profileImageSnapshot.hasData &&
-                      profileImageSnapshot.data != null) {
-                    postData['userProfilePic'] = profileImageSnapshot.data;
-                  }
-
-                  if (kDebugMode) {
-                    print('Post Data: $postData');
-                  }
-
-                  return PostContainer2(
-                    key: ValueKey(postData['postId']),
-                    postData: {
-                      ...postData,
-                      'userName': postData['userName'] ?? 'Unknown User',
-                      'userProfilePic': postData['userProfilePic'] ?? '',
-                      'location':
-                          postData['location'] ?? 'Location not specified'
-                    },
-                  );
+              return PostContainer2(
+                key: ValueKey(postData['postId']),
+                postData: {
+                  ...postData,
+                  'userName': postData['userName'] ?? 'Unknown User',
+                  'userProfilePic': postData['userProfilePic'] ?? '',
+                  'location': postData['location'] ?? 'Location not specified'
                 },
               );
             },
@@ -167,13 +148,11 @@ Widget _buildFirebasePosts(PostProvider2 postProvider) {
 
 Future<String?> fetchUserProfileImage(String userId) async {
   try {
-    // Reference to the profile pictures directory in Firebase Storage
     final storageRef = FirebaseStorage.instance
         .ref()
         .child('profile_pictures')
         .child('$userId.jpg');
 
-    // Try to get the download URL
     final downloadUrl = await storageRef.getDownloadURL();
     return downloadUrl;
   } catch (e) {

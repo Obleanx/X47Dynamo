@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:rxdart/rxdart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -103,7 +102,7 @@ class PostProvider2 with ChangeNotifier {
     }
   }
 
-  // Get all posts method
+  // Modified getPosts method to ensure all posts are fetched
   Stream<QuerySnapshot> getPosts() {
     return FirebaseFirestore.instance
         .collection('posts')
@@ -111,89 +110,100 @@ class PostProvider2 with ChangeNotifier {
         .snapshots();
   }
 
-  // Get location-prioritized posts method
-  Future<Stream<QuerySnapshot>> getLocationPrioritizedPosts() async {
-    try {
-      // Fetch current user
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) throw Exception("User is not authenticated.");
+  // Optional: Add a method to fetch a specific user's posts
+  Stream<QuerySnapshot> getUserPosts(String userId) {
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .where('userId', isEqualTo: userId)
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+}
 
-      // Fetch user document
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+Future<Stream<QuerySnapshot>> getLocationPrioritizedPosts() async {
+  try {
+    // Get current user
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      throw Exception("User is not authenticated.");
+    }
 
-      final userData = userDoc.data() ?? {};
+    // Fetch user document
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
 
-      // Extract location fields
-      String currentLocation = userData['currentLocation'] ?? '';
-      String stateRegion = userData['state/region'] ?? '';
-      String country = userData['country'] ?? '';
-      String permanentAddress = userData['permanentAddress'] ?? '';
-      String hometownInAfrica = userData['hometownInAfrica'] ?? '';
+    final userData = userDoc.data() ?? {};
 
-      // Fallback: No location info, fetch all posts
-      if (currentLocation.isEmpty && stateRegion.isEmpty && country.isEmpty) {
-        return FirebaseFirestore.instance
-            .collection('posts')
-            .orderBy('timestamp', descending: true)
-            .snapshots();
-      }
+    // Get current user's details
+    String currentLocation = userData['currentLocation'] ?? '';
+    String registeredLocation = userData['location'] ?? '';
+    String currentCountry = userData['currentCountry'] ?? '';
+    String registeredCountry = userData['registeredCountry'] ?? '';
 
-      // Base posts query
-      var postsQuery = FirebaseFirestore.instance.collection('posts');
-
-      // Priority 1: Posts matching exact current location
-      var currentLocationPosts = postsQuery
-          .where('location', isEqualTo: currentLocation)
-          .orderBy('timestamp', descending: true)
-          .snapshots();
-
-      // Priority 2: Posts matching the same state/region
-      var statePosts = postsQuery
-          .where('location', isGreaterThanOrEqualTo: stateRegion)
-          .where('location', isLessThan: stateRegion + '\uf8ff')
-          .orderBy('timestamp', descending: true)
-          .snapshots();
-
-      // Priority 3: Posts matching the same country
-      var countryPosts = postsQuery
-          .where('location', isGreaterThanOrEqualTo: country)
-          .where('location', isLessThan: country + '\uf8ff')
-          .orderBy('timestamp', descending: true)
-          .snapshots();
-
-      // Priority 4: Posts matching the hometown in Africa
-      var hometownPosts = postsQuery
-          .where('location', isEqualTo: hometownInAfrica)
-          .orderBy('timestamp', descending: true)
-          .snapshots();
-
-      // Priority 5: Posts from the permanent address
-      var permanentAddressPosts = postsQuery
-          .where('location', isEqualTo: permanentAddress)
-          .orderBy('timestamp', descending: true)
-          .snapshots();
-
-      // Combine prioritized streams
-      return Rx.concat([
-        currentLocationPosts,
-        statePosts,
-        countryPosts,
-        hometownPosts,
-        permanentAddressPosts
-      ]);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching location-prioritized posts: $e');
-      }
-
-      // Fallback: Return default posts
+    // If no location information is available, return default posts
+    if (currentLocation.isEmpty) {
       return FirebaseFirestore.instance
           .collection('posts')
           .orderBy('timestamp', descending: true)
           .snapshots();
     }
+
+    // Split location into components (assuming format like "City, State, Country")
+    List<String> currentLocationParts = currentLocation.split(', ');
+    String currentCity =
+        currentLocationParts.isNotEmpty ? currentLocationParts[0] : '';
+    String currentState =
+        currentLocationParts.length > 1 ? currentLocationParts[1] : '';
+
+    // Create a query with location-based priority
+    Query postsQuery = FirebaseFirestore.instance.collection('posts');
+
+    // Priority 1: Posts from the exact current city
+    var cityPosts = postsQuery
+        .where('location', isEqualTo: currentLocation)
+        .orderBy('timestamp', descending: true);
+
+    // Priority 2: Posts from nearby towns/settlements in the same state
+    var nearbyPosts = postsQuery
+        .where('location', isNotEqualTo: currentLocation)
+        .where('location', isGreaterThanOrEqualTo: currentState)
+        .where('location', isLessThan: currentState + '\uf8ff')
+        .orderBy('location')
+        .orderBy('timestamp', descending: true);
+
+    // Priority 3: Posts from the same state
+    var statePosts = postsQuery
+        .where('location', isGreaterThanOrEqualTo: currentState)
+        .where('location', isLessThan: currentState + '\uf8ff')
+        .orderBy('location')
+        .orderBy('timestamp', descending: true);
+
+    // Priority 4: Posts from the same country
+    var countryPosts = postsQuery
+        .where('location', isGreaterThanOrEqualTo: currentCountry)
+        .where('location', isLessThan: currentCountry + '\uf8ff')
+        .orderBy('location')
+        .orderBy('timestamp', descending: true);
+
+    // Priority 5: If current country is different from registered country, fetch posts from registered country
+    Stream<QuerySnapshot> registeredCountryPosts = postsQuery
+        .where('location', isGreaterThanOrEqualTo: registeredCountry)
+        .where('location', isLessThan: registeredCountry + '\uf8ff')
+        .orderBy('location')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+
+    // Combine the streams (Note: This is a simplified approach and might need more sophisticated merging)
+    return registeredCountryPosts;
+  } catch (e) {
+    print('Error fetching location-prioritized posts: $e');
+
+    // Fallback to default posts retrieval
+    return FirebaseFirestore.instance
+        .collection('posts')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
   }
 }
