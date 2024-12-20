@@ -14,7 +14,7 @@ class HomeProvider extends ChangeNotifier {
 }
 
 class HomeScreen2 extends StatelessWidget {
-  const HomeScreen2({Key? key}) : super(key: key);
+  const HomeScreen2({super.key});
 
   @override
   Widget build(BuildContext context) {

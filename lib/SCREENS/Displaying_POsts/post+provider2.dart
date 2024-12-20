@@ -4,12 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:geoflutterfire/geoflutterfire.dart';
 
 class PostProvider2 with ChangeNotifier {
   String _content = '';
   String _location = '';
   String? _imagePath;
   bool _isLoading = false;
+  double _searchRadiusKm = 10.0; // Default search radius in kilometers
+  final _firestore = FirebaseFirestore.instance;
 
   // Getters
   String get content => _content;
@@ -38,7 +41,7 @@ class PostProvider2 with ChangeNotifier {
     notifyListeners();
   }
 
-  // Post creation method
+  // Modified createPost method to include GeoFirePoint
   Future<DocumentReference?> createPost({BuildContext? context}) async {
     setLoading(true);
     try {
@@ -49,22 +52,23 @@ class PostProvider2 with ChangeNotifier {
         throw Exception("User is not authenticated.");
       }
 
-      // Fetch user document directly
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+      // Fetch user document with location data
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
       final userData = userDoc.data() ?? {};
 
-      // Extract user details
-      String firstName = userData['firstName'] ?? 'Anonymous';
-      String lastName = userData['lastName'] ?? '';
-      String userProfilePic = userData['profileImageUrl'] ?? '';
-      String userLocation = userData['location'] ?? 'Unknown Location';
-      String userName = '$firstName $lastName'.trim();
+      // Extract location data
+      final latitude = userData['latitude'] as double?;
+      final longitude = userData['longitude'] as double?;
 
-      // Upload post image if exists
+      if (latitude == null || longitude == null) {
+        throw Exception("Location data is missing.");
+      }
+
+      // Create GeoFirePoint
+      final geoPoint = _geo.point(latitude: latitude, longitude: longitude);
+
+      // Upload image if exists
       if (_imagePath != null) {
         final ref = FirebaseStorage.instance
             .ref()
@@ -76,15 +80,18 @@ class PostProvider2 with ChangeNotifier {
         imageUrl = await ref.getDownloadURL();
       }
 
-      // Create post in Firestore
-      final postRef = await FirebaseFirestore.instance.collection('posts').add({
+      // Create post with location data
+      final postRef = await _firestore.collection('posts').add({
         'content': _content,
         'imageUrl': imageUrl,
         'timestamp': FieldValue.serverTimestamp(),
         'userId': user.uid,
-        'userName': userName,
-        'userProfilePic': userProfilePic,
-        'location': userLocation,
+        'userName':
+            '${userData['firstName'] ?? 'Anonymous'} ${userData['lastName'] ?? ''}'
+                .trim(),
+        'userProfilePic': userData['profileImageUrl'] ?? '',
+        'location': userData['location'] ?? 'Unknown Location',
+        'position': geoPoint.data, // GeoFirePoint data
       });
 
       _content = '';
@@ -102,107 +109,61 @@ class PostProvider2 with ChangeNotifier {
     }
   }
 
-  // Modified getPosts method to ensure all posts are fetched
-  Stream<QuerySnapshot> getPosts() {
-    return FirebaseFirestore.instance
-        .collection('posts')
-        .orderBy('timestamp', descending: true)
-        .snapshots();
-  }
+  // Modified getPosts method to fetch location-based posts
+  Stream<List<DocumentSnapshot>> getPosts() async* {
+    try {
+      // Get current user's location
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User not authenticated");
+      }
 
-  // Optional: Add a method to fetch a specific user's posts
-  Stream<QuerySnapshot> getUserPosts(String userId) {
-    return FirebaseFirestore.instance
-        .collection('posts')
-        .where('userId', isEqualTo: userId)
-        .orderBy('timestamp', descending: true)
-        .snapshots();
-  }
-}
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
 
-Future<Stream<QuerySnapshot>> getLocationPrioritizedPosts() async {
-  try {
-    // Get current user
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) {
-      throw Exception("User is not authenticated.");
-    }
+      final userData = userDoc.data() ?? {};
+      final latitude = userData['latitude'] as double?;
+      final longitude = userData['longitude'] as double?;
 
-    // Fetch user document
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+      if (latitude == null || longitude == null) {
+        // Fallback to regular post fetching
+        yield* _firestore
+            .collection('posts')
+            .orderBy('timestamp', descending: true)
+            .snapshots()
+            .map((snapshot) => snapshot.docs);
+        return;
+      }
 
-    final userData = userDoc.data() ?? {};
+      // Create a GeoFirePoint for the current user's location
+      final center = _geo.point(latitude: latitude, longitude: longitude);
 
-    // Get current user's details
-    String currentLocation = userData['currentLocation'] ?? '';
-    String registeredLocation = userData['location'] ?? '';
-    String currentCountry = userData['currentCountry'] ?? '';
-    String registeredCountry = userData['registeredCountry'] ?? '';
-
-    // If no location information is available, return default posts
-    if (currentLocation.isEmpty) {
-      return FirebaseFirestore.instance
+      // Query posts based on location
+      yield* _geo
+          .collection(collectionRef: _firestore.collection('posts'))
+          .within(
+            center: center,
+            radius: _searchRadiusKm,
+            field: 'position',
+            strictMode: true,
+          );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching posts: $e');
+      }
+      // Fallback to regular post fetching
+      yield* _firestore
           .collection('posts')
           .orderBy('timestamp', descending: true)
-          .snapshots();
+          .snapshots()
+          .map((snapshot) => snapshot.docs);
     }
+  }
 
-    // Split location into components (assuming format like "City, State, Country")
-    List<String> currentLocationParts = currentLocation.split(', ');
-    String currentCity =
-        currentLocationParts.isNotEmpty ? currentLocationParts[0] : '';
-    String currentState =
-        currentLocationParts.length > 1 ? currentLocationParts[1] : '';
-
-    // Create a query with location-based priority
-    Query postsQuery = FirebaseFirestore.instance.collection('posts');
-
-    // Priority 1: Posts from the exact current city
-    var cityPosts = postsQuery
-        .where('location', isEqualTo: currentLocation)
-        .orderBy('timestamp', descending: true);
-
-    // Priority 2: Posts from nearby towns/settlements in the same state
-    var nearbyPosts = postsQuery
-        .where('location', isNotEqualTo: currentLocation)
-        .where('location', isGreaterThanOrEqualTo: currentState)
-        .where('location', isLessThan: currentState + '\uf8ff')
-        .orderBy('location')
-        .orderBy('timestamp', descending: true);
-
-    // Priority 3: Posts from the same state
-    var statePosts = postsQuery
-        .where('location', isGreaterThanOrEqualTo: currentState)
-        .where('location', isLessThan: currentState + '\uf8ff')
-        .orderBy('location')
-        .orderBy('timestamp', descending: true);
-
-    // Priority 4: Posts from the same country
-    var countryPosts = postsQuery
-        .where('location', isGreaterThanOrEqualTo: currentCountry)
-        .where('location', isLessThan: currentCountry + '\uf8ff')
-        .orderBy('location')
-        .orderBy('timestamp', descending: true);
-
-    // Priority 5: If current country is different from registered country, fetch posts from registered country
-    Stream<QuerySnapshot> registeredCountryPosts = postsQuery
-        .where('location', isGreaterThanOrEqualTo: registeredCountry)
-        .where('location', isLessThan: registeredCountry + '\uf8ff')
-        .orderBy('location')
-        .orderBy('timestamp', descending: true)
-        .snapshots();
-
-    // Combine the streams (Note: This is a simplified approach and might need more sophisticated merging)
-    return registeredCountryPosts;
-  } catch (e) {
-    print('Error fetching location-prioritized posts: $e');
-
-    // Fallback to default posts retrieval
-    return FirebaseFirestore.instance
+  // Method to fetch a specific user's posts (unchanged)
+  Stream<QuerySnapshot> getUserPosts(String userId) {
+    return _firestore
         .collection('posts')
+        .where('userId', isEqualTo: userId)
         .orderBy('timestamp', descending: true)
         .snapshots();
   }

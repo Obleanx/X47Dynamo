@@ -18,9 +18,19 @@ class _PostContainer2State extends State<PostContainer2> {
   bool _isLiked = false;
   int _likeCount = 0;
 
+  bool _isLoadingUserDetails = false;
+
   @override
   void initState() {
     super.initState();
+    // Only fetch if essential data is missing
+    if (widget.postData['userProfilePic'] == null ||
+        widget.postData['userProfilePic'].isEmpty ||
+        widget.postData['userName'] == null ||
+        widget.postData['userName'].isEmpty) {
+      _fetchPostCreatorDetails();
+    }
+
     _fetchLikeStatus();
     _fetchUserLocation();
     _fetchPostCreatorDetails();
@@ -103,31 +113,44 @@ class _PostContainer2State extends State<PostContainer2> {
     );
   }
 
-  // Fetch post creator's details from Firestore
+  // Fetch post creator's details only if necessary
   Future<void> _fetchPostCreatorDetails() async {
+    if (_isLoadingUserDetails) return;
+
+    setState(() {
+      _isLoadingUserDetails = true;
+    });
+
     try {
-      // Use the userId from the post data to fetch the original creator's details
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.postData['userId'])
           .get();
 
       if (userDoc.exists) {
-        // Extract user details
         final userData = userDoc.data() ?? {};
-
-        // Prepare user details
-        final String firstName = userData['firstName'] ?? 'Anonymous';
-        final String lastName = userData['lastName'] ?? '';
-        final String profileImageUrl = userData['profileImageUrl'] ?? '';
-        final String location = userData['location'] ?? 'Unknown Location';
 
         if (mounted) {
           setState(() {
-            // Update widget with fetched user details
-            widget.postData['userName'] = '$firstName $lastName'.trim();
-            widget.postData['userProfilePic'] = profileImageUrl;
-            widget.postData['location'] = location;
+            // Only update if the data is missing or empty
+            if (widget.postData['userName'] == null ||
+                widget.postData['userName'].isEmpty) {
+              final String firstName = userData['firstName'] ?? 'Anonymous';
+              final String lastName = userData['lastName'] ?? '';
+              widget.postData['userName'] = '$firstName $lastName'.trim();
+            }
+
+            if (widget.postData['userProfilePic'] == null ||
+                widget.postData['userProfilePic'].isEmpty) {
+              widget.postData['userProfilePic'] =
+                  userData['profileImageUrl'] ?? '';
+            }
+
+            if (widget.postData['location'] == null ||
+                widget.postData['location'].isEmpty) {
+              widget.postData['location'] =
+                  userData['location'] ?? 'Unknown Location';
+            }
           });
         }
       }
@@ -135,12 +158,16 @@ class _PostContainer2State extends State<PostContainer2> {
       if (kDebugMode) {
         print('Error fetching post creator details: $e');
       }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingUserDetails = false;
+        });
+      }
     }
   }
 
-// Update your _buildUserHeader method to handle dynamic profile image
   Widget _buildUserHeader(BuildContext context) {
-    // Use the saved user details directly from the post data
     final userName = widget.postData['userName'] ?? 'Anonymous';
     final userProfilePic = widget.postData['userProfilePic'] ?? '';
     final userLocation = widget.postData['location'] ?? 'Unknown Location';
@@ -158,11 +185,19 @@ class _PostContainer2State extends State<PostContainer2> {
                     fit: BoxFit.cover,
                     width: 40,
                     height: 40,
+                    // Add memory and disk caching
+                    // cacheManager: DefaultCacheManager(),
+                    memCacheHeight: 120,
+                    memCacheWidth: 120,
                     placeholder: (context, url) =>
                         Icon(Icons.person, color: Colors.grey[400]),
                     errorWidget: (context, url, error) {
                       if (kDebugMode) {
                         print('Error loading profile image: $error');
+                      }
+                      // Try to fetch updated details if image fails to load
+                      if (!_isLoadingUserDetails) {
+                        _fetchPostCreatorDetails();
                       }
                       return Icon(Icons.person, color: Colors.grey[400]);
                     },
@@ -171,19 +206,22 @@ class _PostContainer2State extends State<PostContainer2> {
               : Icon(Icons.person, color: Colors.grey[400]),
         ),
         const SizedBox(width: 10),
-        // User Name and Location
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              userName,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              userLocation,
-              style: TextStyle(color: Colors.grey[600], fontSize: 12),
-            ),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                userName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                userLocation,
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ],
     );

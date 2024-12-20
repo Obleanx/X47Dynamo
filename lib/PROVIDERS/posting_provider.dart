@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_cloud_firestore/firebase_cloud_firestore.dart';
 
+//this code is what is responsible for user beign able to create post.
 class PostProvider with ChangeNotifier {
   String _content = '';
   String _location = '';

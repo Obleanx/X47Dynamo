@@ -14,11 +14,9 @@ import 'package:kakra/PROVIDERS/posting_provider.dart';
 import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
 
 // post_screen.dart
-// Custom Expandable App Bar
 
 class CustomExpandableAppBar extends StatelessWidget {
   CustomExpandableAppBar({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -53,8 +51,58 @@ class PostCreationScreen extends StatelessWidget {
 
   PostCreationScreen({super.key});
 
-  //gets the users current location and adds it to the backennd
-  Future<String?> _getCurrentLocation() async {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Generate a simple geohash from coordinates
+  String _createGeohash(double latitude, double longitude,
+      {int precision = 8}) {
+    const base32 = '0123456789bcdefghjkmnpqrstuvwxyz';
+    double lat = latitude;
+    double lon = longitude;
+    int idx = 0;
+    int bit = 0;
+    bool evenBit = true;
+    String geohash = '';
+
+    double latMin = -90, latMax = 90;
+    double lonMin = -180, lonMax = 180;
+
+    while (geohash.length < precision) {
+      if (evenBit) {
+        double lonMid = (lonMin + lonMax) / 2;
+        if (lon >= lonMid) {
+          idx = idx * 2 + 1;
+          lonMin = lonMid;
+        } else {
+          idx *= 2;
+          lonMax = lonMid;
+        }
+      } else {
+        double latMid = (latMin + latMax) / 2;
+        if (lat >= latMid) {
+          idx = idx * 2 + 1;
+          latMin = latMid;
+        } else {
+          idx *= 2;
+          latMax = latMid;
+        }
+      }
+
+      evenBit = !evenBit;
+      bit++;
+
+      if (bit == 5) {
+        geohash += base32[idx];
+        bit = 0;
+        idx = 0;
+      }
+    }
+
+    return geohash;
+  }
+
+  // Gets the user's current location and stores enhanced location data
+  Future<Map<String, dynamic>?> _getCurrentLocation() async {
     try {
       // Request location permissions
       LocationPermission permission = await Geolocator.requestPermission();
@@ -72,19 +120,29 @@ class PostCreationScreen extends StatelessWidget {
         String locationString =
             '${place.locality}, ${place.administrativeArea}';
 
-        // Save location to Firestore for the current user
+        // Generate geohash
+        String geohash = _createGeohash(position.latitude, position.longitude);
+
+        // Prepare location data
+        final locationData = {
+          'location': locationString,
+          'geohash': geohash,
+          'geopoint': GeoPoint(position.latitude, position.longitude),
+          'latitude': position.latitude,
+          'longitude': position.longitude,
+          'lastLocationUpdated': FieldValue.serverTimestamp(),
+        };
+
+        // Save enhanced location to Firestore for the current user
         final user = FirebaseAuth.instance.currentUser;
         if (user != null) {
-          await FirebaseFirestore.instance
+          await _firestore
               .collection('users')
               .doc(user.uid)
-              .update({
-            'location': locationString,
-            'lastLocationUpdated': FieldValue.serverTimestamp(),
-          });
+              .update(locationData);
         }
 
-        return locationString;
+        return locationData;
       }
       return null;
     } catch (e) {
@@ -212,7 +270,7 @@ class PostCreationScreen extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            FutureBuilder<String?>(
+                            FutureBuilder<Map<String, dynamic>?>(
                               future: _getCurrentLocation(),
                               builder: (context, snapshot) {
                                 if (snapshot.connectionState ==
@@ -220,9 +278,11 @@ class PostCreationScreen extends StatelessWidget {
                                   return const Text('Fetching location...');
                                 }
                                 if (snapshot.hasData) {
-                                  postProvider.setLocation(snapshot.data!);
+                                  final locationString =
+                                      snapshot.data!['location'] as String;
+                                  postProvider.setLocation(locationString);
                                   return Text(
-                                    snapshot.data!,
+                                    locationString,
                                     style: const TextStyle(color: Colors.grey),
                                   );
                                 }
