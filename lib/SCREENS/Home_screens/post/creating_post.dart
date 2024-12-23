@@ -14,9 +14,8 @@ import 'package:kakra/PROVIDERS/posting_provider.dart';
 import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
 
 // post_screen.dart
-
 class CustomExpandableAppBar extends StatelessWidget {
-  CustomExpandableAppBar({super.key});
+  const CustomExpandableAppBar({super.key});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -195,7 +194,7 @@ class PostCreationScreen extends StatelessWidget {
           builder: (context, postProvider, child) {
             return Column(
               children: [
-                CustomExpandableAppBar(),
+                const CustomExpandableAppBar(),
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),

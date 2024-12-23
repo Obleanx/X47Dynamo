@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PostContainer2 extends StatefulWidget {
   final Map<String, dynamic> postData;
@@ -114,6 +116,8 @@ class _PostContainer2State extends State<PostContainer2> {
   }
 
   // Fetch post creator's details only if necessary
+
+// 2. Modified _fetchPostCreatorDetails to update only when necessary
   Future<void> _fetchPostCreatorDetails() async {
     if (_isLoadingUserDetails) return;
 
@@ -132,25 +136,14 @@ class _PostContainer2State extends State<PostContainer2> {
 
         if (mounted) {
           setState(() {
-            // Only update if the data is missing or empty
-            if (widget.postData['userName'] == null ||
-                widget.postData['userName'].isEmpty) {
-              final String firstName = userData['firstName'] ?? 'Anonymous';
-              final String lastName = userData['lastName'] ?? '';
-              widget.postData['userName'] = '$firstName $lastName'.trim();
-            }
-
-            if (widget.postData['userProfilePic'] == null ||
-                widget.postData['userProfilePic'].isEmpty) {
-              widget.postData['userProfilePic'] =
-                  userData['profileImageUrl'] ?? '';
-            }
-
-            if (widget.postData['location'] == null ||
-                widget.postData['location'].isEmpty) {
-              widget.postData['location'] =
-                  userData['location'] ?? 'Unknown Location';
-            }
+            // Always update the profile data to ensure it's current
+            final String firstName = userData['firstName'] ?? 'Anonymous';
+            final String lastName = userData['lastName'] ?? '';
+            widget.postData['userName'] = '$firstName $lastName'.trim();
+            widget.postData['userProfilePic'] =
+                userData['profileImageUrl'] ?? '';
+            widget.postData['location'] =
+                userData['location'] ?? 'Unknown Location';
           });
         }
       }
@@ -167,6 +160,7 @@ class _PostContainer2State extends State<PostContainer2> {
     }
   }
 
+// 3. Modified _buildUserHeader with improved profile image handling
   Widget _buildUserHeader(BuildContext context) {
     final userName = widget.postData['userName'] ?? 'Anonymous';
     final userProfilePic = widget.postData['userProfilePic'] ?? '';
@@ -178,32 +172,41 @@ class _PostContainer2State extends State<PostContainer2> {
         CircleAvatar(
           radius: 20,
           backgroundColor: Colors.grey[200],
-          child: userProfilePic.isNotEmpty
-              ? ClipOval(
-                  child: CachedNetworkImage(
+          child: ClipOval(
+            child: userProfilePic.isNotEmpty
+                ? CachedNetworkImage(
                     imageUrl: userProfilePic,
                     fit: BoxFit.cover,
                     width: 40,
                     height: 40,
-                    // Add memory and disk caching
-                    // cacheManager: DefaultCacheManager(),
                     memCacheHeight: 120,
                     memCacheWidth: 120,
-                    placeholder: (context, url) =>
-                        Icon(Icons.person, color: Colors.grey[400]),
+                    placeholder: (context, url) => Icon(
+                      Icons.person,
+                      color: Colors.grey[400],
+                      size: 24,
+                    ),
                     errorWidget: (context, url, error) {
                       if (kDebugMode) {
                         print('Error loading profile image: $error');
                       }
-                      // Try to fetch updated details if image fails to load
+                      // Fetch updated details if image fails to load
                       if (!_isLoadingUserDetails) {
                         _fetchPostCreatorDetails();
                       }
-                      return Icon(Icons.person, color: Colors.grey[400]);
+                      return Icon(
+                        Icons.person,
+                        color: Colors.grey[400],
+                        size: 24,
+                      );
                     },
+                  )
+                : Icon(
+                    Icons.person,
+                    color: Colors.grey[400],
+                    size: 24,
                   ),
-                )
-              : Icon(Icons.person, color: Colors.grey[400]),
+          ),
         ),
         const SizedBox(width: 10),
         Expanded(
@@ -424,6 +427,101 @@ class _PostContainer2State extends State<PostContainer2> {
     } catch (e) {
       if (kDebugMode) {
         print('Error toggling like: $e');
+      }
+    }
+  }
+}
+
+class PostWidget extends StatefulWidget {
+  final Map<String, dynamic> postData;
+
+  const PostWidget({Key? key, required this.postData}) : super(key: key);
+
+  @override
+  State<PostWidget> createState() => _PostWidgetState();
+}
+
+class _PostWidgetState extends State<PostWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(); // Replace with your actual widget tree
+  }
+
+  bool _isLoadingUserDetails = false;
+  final _profileImageCache = <String, String>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeProfileImage();
+  }
+
+  Future<void> _initializeProfileImage() async {
+    final userId = widget.postData['userId'] as String?;
+    if (userId == null) return;
+
+    // Try to load from memory cache first
+    if (_profileImageCache.containsKey(userId)) {
+      return;
+    }
+
+    // Try to load from local storage
+    final prefs = await SharedPreferences.getInstance();
+    final cachedImageUrl = prefs.getString('profile_image_$userId');
+
+    if (cachedImageUrl != null) {
+      _profileImageCache[userId] = cachedImageUrl;
+      if (mounted) setState(() {});
+      return;
+    }
+
+    // If not in cache, fetch from Firestore and save
+    await _fetchAndCacheUserProfile(userId);
+  }
+
+  Future<void> _fetchAndCacheUserProfile(String userId) async {
+    try {
+      _isLoadingUserDetails = true;
+      if (mounted) setState(() {});
+
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      if (!userDoc.exists) return;
+
+      final userData = userDoc.data() ?? {};
+      final profileImageUrl = userData['profileImageUrl'] as String?;
+
+      if (profileImageUrl != null && profileImageUrl.isNotEmpty) {
+        // Save to memory cache
+        _profileImageCache[userId] = profileImageUrl;
+
+        // Save to local storage
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('profile_image_$userId', profileImageUrl);
+
+        // Download image for offline access
+        await _downloadAndCacheImage(profileImageUrl, userId);
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching user profile: $e');
+      }
+    } finally {
+      _isLoadingUserDetails = false;
+      if (mounted) setState(() {});
+    }
+  }
+
+  Future<void> _downloadAndCacheImage(String imageUrl, String userId) async {
+    try {
+      final cacheManager = DefaultCacheManager();
+      await cacheManager.downloadFile(imageUrl);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error downloading image: $e');
       }
     }
   }

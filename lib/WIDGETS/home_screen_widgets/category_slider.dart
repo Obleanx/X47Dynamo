@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:kakra/providers/home_provider.dart';
+import 'package:kakra/PROVIDERS/home_provider.dart';
 import 'package:kakra/SCREENS/Home_screens/market%20place/market_home_screen.dart';
 
 class CategorySlider extends StatelessWidget {

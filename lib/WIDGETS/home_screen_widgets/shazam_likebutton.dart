@@ -1,8 +1,8 @@
-// lib/widgets/custom_floating_button/custom_floating_button.dart
 import 'package:flutter/material.dart';
-import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
 import 'package:provider/provider.dart';
-import '../../providers/home_provider.dart';
+import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
+import 'package:kakra/PROVIDERS/home_provider.dart'; // Add this line to import HomeProvider
+// lib/widgets/custom_floating_button/custom_floating_button.dart
 
 class CustomFloatingActionButton extends StatelessWidget {
   const CustomFloatingActionButton({super.key});

@@ -91,18 +91,57 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+// Modified _buildFirebasePosts method with better error handling
 Widget _buildFirebasePosts(PostProvider2 postProvider) {
   return StreamBuilder<List<DocumentSnapshot>>(
     stream: postProvider.getPosts(),
     builder: (context, snapshot) {
+      // Print debug information
+      if (kDebugMode) {
+        print('StreamBuilder state: ${snapshot.connectionState}');
+      }
+      // ignore: curly_braces_in_flow_control_structures
+      if (snapshot.hasError) if (kDebugMode) {
+        print('StreamBuilder error: ${snapshot.error}');
+      }
+      if (snapshot.hasData) {
+        if (kDebugMode) {
+          print('StreamBuilder data length: ${snapshot.data?.length}');
+        }
+      }
+
       if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(child: CircularProgressIndicator());
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
       }
+
       if (snapshot.hasError) {
-        return Center(child: Text('Error: ${snapshot.error}'));
+        return Center(
+          child: Text(
+            'Error loading posts: ${snapshot.error}',
+            style: const TextStyle(color: Colors.red),
+          ),
+        );
       }
+
       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-        return const Center(child: Text('No posts yet'));
+        return const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Icons.post_add, size: 48, color: Colors.grey),
+              ),
+              SizedBox(height: 16),
+              Text(
+                'No posts available',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            ],
+          ),
+        );
       }
 
       return ListView.builder(
@@ -110,18 +149,31 @@ Widget _buildFirebasePosts(PostProvider2 postProvider) {
         physics: const NeverScrollableScrollPhysics(),
         itemCount: snapshot.data!.length,
         itemBuilder: (context, index) {
-          var postData = snapshot.data![index].data() as Map<String, dynamic>;
-          postData['postId'] = snapshot.data![index].id;
+          try {
+            var postDoc = snapshot.data![index];
+            var postData = postDoc.data() as Map<String, dynamic>;
+            postData['postId'] = postDoc.id;
 
-          return PostContainer2(
-            key: ValueKey(postData['postId']),
-            postData: {
+            // Ensure all required fields are present
+            final processedPostData = {
               ...postData,
               'userName': postData['userName'] ?? 'Unknown User',
               'userProfilePic': postData['userProfilePic'] ?? '',
-              'location': postData['location'] ?? 'Location not specified'
-            },
-          );
+              'location': postData['location'] ?? 'Location not specified',
+              'timestamp': postData['timestamp'] ?? Timestamp.now(),
+              'userId': postData['userId'] ?? '', // Ensure userId is included
+            };
+
+            return PostContainer2(
+              key: ValueKey(processedPostData['postId']),
+              postData: processedPostData,
+            );
+          } catch (e) {
+            if (kDebugMode) {
+              print('Error building post at index $index: $e');
+            }
+            return const SizedBox.shrink();
+          }
         },
       );
     },

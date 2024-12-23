@@ -63,7 +63,19 @@ class PostProvider with ChangeNotifier {
           .doc(user.uid)
           .get();
 
-      String userName = userDoc.data()?['firstName'] ?? 'Anonymous';
+      if (!userDoc.exists) {
+        throw Exception("User document not found.");
+      }
+
+      final userData = userDoc.data() ?? {};
+
+      // Construct full name from firstName and lastName
+      final String firstName = userData['firstName'] ?? 'Anonymous';
+      final String lastName = userData['lastName'] ?? '';
+      final String fullName = '$firstName $lastName'.trim();
+
+      // Get profile image URL
+      final String userProfilePic = userData['profileImageUrl'] ?? '';
 
       // Upload post image if exists
       if (_imagePath != null) {
@@ -78,16 +90,22 @@ class PostProvider with ChangeNotifier {
       }
 
       // Get user's saved location from Firestore
-      String? userLocation = userDoc.data()?['location'];
+      String? userLocation = userData['location'];
 
-      // Create post in Firestore
+      // Create post in Firestore with complete user details
       await FirebaseFirestore.instance.collection('posts').add({
         'content': _content,
         'location': userLocation ?? _location,
         'imageUrl': imageUrl,
         'timestamp': FieldValue.serverTimestamp(),
         'userId': user.uid,
-        'userName': userName,
+        'userName': fullName,
+        'userProfilePic': userProfilePic, // Add profile picture URL
+        'firstName': firstName, // Store individual name components
+        'lastName': lastName,
+        'email': user.email, // Optional: store email if needed
+        'lastUpdated':
+            FieldValue.serverTimestamp(), // Track when post was last updated
       });
 
       // Reset state
@@ -96,6 +114,16 @@ class PostProvider with ChangeNotifier {
       _imagePath = null;
       notifyListeners();
 
+      // Show success message
+      if (scaffoldContext.mounted) {
+        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+          const SnackBar(
+            content: Text('Post created successfully!'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+
       // Navigate to home screen after post creation
       if (navigationContext.mounted) {
         Navigator.pushReplacementNamed(navigationContext, '/home');
@@ -103,6 +131,17 @@ class PostProvider with ChangeNotifier {
     } catch (e) {
       if (kDebugMode) {
         print('Error creating post: $e');
+      }
+
+      // Show error message
+      if (scaffoldContext.mounted) {
+        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+          SnackBar(
+            content: Text('Error creating post: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
       }
     } finally {
       // Reset loading state
