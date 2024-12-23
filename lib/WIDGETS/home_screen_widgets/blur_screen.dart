@@ -38,23 +38,23 @@ class MenuOverlay extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  _buildMenuItem(
-                    icon: Icons.camera_alt_outlined,
-                    label: 'Post',
-                    iconColor: const Color(0xFF2486C2),
-                    onTap: () {
-                      // Add your Post functionality here
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => PostCreationScreen()),
-                      );
+                  // _buildMenuItem(
+                  // icon: Icons.camera_alt_outlined,
+                  // label: 'Post',
+                  // iconColor: const Color(0xFF2486C2),
+                  // onTap: () {
+                  // Add your Post functionality here
+                  // Navigator.push(
+                  // context,
+                  // MaterialPageRoute(
+                  // builder: (context) => PostCreationScreen()),
+                  // );
 
-                      if (kDebugMode) {
-                        print('Post tapped');
-                      }
-                    },
-                  ),
+                  // if (kDebugMode) {
+                  // print('Post tapped');
+                  // }
+                  // },
+                  // ),
                   const SizedBox(height: 10),
                   _buildMenuItem(
                     icon: Icons.groups_outlined,
@@ -66,22 +66,22 @@ class MenuOverlay extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 10),
-                  _buildMenuItem(
-                    icon: Icons.dashboard_outlined,
-                    label: 'Town Square',
-                    iconColor: const Color(0xFF2486C2),
-                    onTap: () {
-                      // Add your Town Square functionality here //
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => TownSquareScreen()),
-                      );
-                      if (kDebugMode) {
-                        print('Town Square tapped');
-                      }
-                    },
-                  ),
+                  // _buildMenuItem(
+                  // icon: Icons.dashboard_outlined,
+                  // label: 'Town Square',
+                  // iconColor: const Color(0xFF2486C2),
+                  // onTap: () {
+                  // Add your Town Square functionality here //
+                  // Navigator.push(
+                  // context,
+                  // MaterialPageRoute(
+                  // builder: (context) => TownSquareScreen()),
+                  // );
+                  // if (kDebugMode) {
+                  // print('Town Square tapped');
+                  // }
+                  // },
+                  // ),
                   const SizedBox(height: 10),
                   _buildMenuItem(
                     icon: Icons.shopping_cart_outlined,
