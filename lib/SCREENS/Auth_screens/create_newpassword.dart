@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:kakra/PROVIDERS/auth_provider.dart';
-import 'package:kakra/SCREENS/Auth_screens/forgot_password.dart';
+import 'package:kakra/widgets/reusable_button.dart';
 import 'package:kakra/WIDGETS/customtext_fileds.dart';
 import 'package:kakra/WIDGETS/password_validator.dart';
-import 'package:kakra/widgets/reusable_button.dart';
-import 'package:provider/provider.dart';
+import 'package:kakra/SCREENS/Auth_screens/forgot_password.dart';
 
 class CreatePasswordScreen extends StatefulWidget {
   const CreatePasswordScreen({super.key});
@@ -25,8 +25,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             onPressed: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const ForgotPasswordScreen()),
+                MaterialPageRoute(builder: (context) => ForgotPasswordScreen()),
               );
             },
           ),

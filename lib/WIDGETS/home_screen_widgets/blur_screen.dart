@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
-import 'package:kakra/SCREENS/Home_screens/post/creating_post.dart';
 import 'package:kakra/SCREENS/Home_screens/Town%20square/town_square_screen.dart';
 import 'package:kakra/SCREENS/Home_screens/market%20place/market_home_screen.dart';
 
@@ -38,50 +37,31 @@ class MenuOverlay extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  // _buildMenuItem(
-                  // icon: Icons.camera_alt_outlined,
-                  // label: 'Post',
-                  // iconColor: const Color(0xFF2486C2),
-                  // onTap: () {
-                  // Add your Post functionality here
-                  // Navigator.push(
-                  // context,
-                  // MaterialPageRoute(
-                  // builder: (context) => PostCreationScreen()),
-                  // );
-
-                  // if (kDebugMode) {
-                  // print('Post tapped');
-                  // }
-                  // },
-                  // ),
-                  const SizedBox(height: 10),
                   _buildMenuItem(
                     icon: Icons.groups_outlined,
                     label: 'Community',
                     iconColor: const Color(0xFF2486C2),
                     onTap: () {
-                      // Add your Community functionality here
                       print('Community tapped');
                     },
                   ),
                   const SizedBox(height: 10),
-                  // _buildMenuItem(
-                  // icon: Icons.dashboard_outlined,
-                  // label: 'Town Square',
-                  // iconColor: const Color(0xFF2486C2),
-                  // onTap: () {
-                  // Add your Town Square functionality here //
-                  // Navigator.push(
-                  // context,
-                  // MaterialPageRoute(
-                  // builder: (context) => TownSquareScreen()),
-                  // );
-                  // if (kDebugMode) {
-                  // print('Town Square tapped');
-                  // }
-                  // },
-                  // ),
+                  _buildMenuItem(
+                    icon: Icons.dashboard_outlined,
+                    label: 'Town Square',
+                    iconColor: const Color(0xFF2486C2),
+                    onTap: () {
+                      // Add your Town Square functionality here //
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TownSquareScreen()),
+                      );
+                      if (kDebugMode) {
+                        print('Town Square tapped');
+                      }
+                    },
+                  ),
                   const SizedBox(height: 10),
                   _buildMenuItem(
                     icon: Icons.shopping_cart_outlined,

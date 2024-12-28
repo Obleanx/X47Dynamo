@@ -7,7 +7,7 @@ import 'package:kakra/WIDGETS/terms_of_service.dart';
 import 'package:kakra/WIDGETS/registration_form.dart';
 import 'package:kakra/WIDGETS/registration_tabs.dart';
 import 'package:kakra/WIDGETS/customtext_fileds.dart';
-import 'package:kakra/SCREENS/Auth_screens/create_newpassword.dart';
+import 'package:kakra/SCREENS/Auth_screens/forgot_password.dart';
 
 class SignUpScreen extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -132,7 +132,7 @@ class SignUpScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                            const CreatePasswordScreen()),
+                                            ForgotPasswordScreen()),
                                   );
                                 },
                                 child: const Text(
