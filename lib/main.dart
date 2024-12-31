@@ -19,6 +19,7 @@ import 'package:kakra/PROVIDERS/sellerlisting_provider.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
 import 'package:kakra/PROVIDERS/profile_update_provider.dart';
 import 'package:kakra/PROVIDERS/shazam_buttton_provider.dart';
+import 'package:kakra/SCREENS/Auth_screens/create_account.dart';
 import 'package:kakra/PROVIDERS/product_description_provider.dart';
 import 'package:kakra/SCREENS/Displaying_POsts/post+provider2.dart';
 import 'package:kakra/SCREENS/Home_screens/post/creating_post.dart';
@@ -91,6 +92,9 @@ class MyApp extends StatelessWidget {
         '/messages': (context) => const ChatMessageScreen(),
         '/profile': (context) => const ProfileScreen(),
         '/create-post': (context) => PostCreationScreen(),
+        '/ OnboardingScreens': (context) => const AllOnboardingScreens(),
+        '/signup': (context) => SignUpScreen(),
+        //'/post-creation': (context) => PostCreationScreen(),
       },
     );
   }

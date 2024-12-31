@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakra/SERVICES/firebase_service.dart';
 import 'package:kakra/SCREENS/Home_screens/home_screen.dart';
-import 'package:kakra/SCREENS/Auth_screens/create_newpassword.dart';
 
 class RegistrationProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -68,7 +67,7 @@ class RegistrationProvider extends ChangeNotifier {
 
   String? validateAfricanPhoneNumber(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter a phone number';
+      return '';
     }
 
     // Remove any spaces or formatting
@@ -379,8 +378,9 @@ class RegistrationProvider extends ChangeNotifier {
         }
 
         // Navigate to home screen
+        // ignore: use_build_context_synchronously
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => HomeScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } on FirebaseAuthException catch (e) {

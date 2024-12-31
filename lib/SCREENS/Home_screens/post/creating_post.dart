@@ -116,8 +116,18 @@ class PostCreationScreen extends StatelessWidget {
 
       if (placemarks.isNotEmpty) {
         Placemark place = placemarks[0];
-        String locationString =
-            '${place.locality}, ${place.administrativeArea}';
+
+        // Enhanced location string formatting
+        String locationString = '';
+        if (place.subAdministrativeArea?.isNotEmpty ?? false) {
+          locationString = '${place.subAdministrativeArea}, ${place.country}';
+        } else if (place.administrativeArea?.isNotEmpty ?? false) {
+          locationString = '${place.administrativeArea}, ${place.country}';
+        } else if (place.locality?.isNotEmpty ?? false) {
+          locationString = '${place.locality}, ${place.country}';
+        } else {
+          locationString = place.country ?? 'Unknown Location';
+        }
 
         // Generate geohash
         String geohash = _createGeohash(position.latitude, position.longitude);

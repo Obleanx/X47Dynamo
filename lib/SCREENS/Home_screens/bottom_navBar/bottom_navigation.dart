@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:flutter/material.dart';
 import 'package:kakra/WIDGETS/pop_scaffold.dart';
+import 'package:kakra/SCREENS/Home_screens/post/creating_post.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   const CustomBottomNavBar({super.key});
@@ -25,7 +26,8 @@ class CustomBottomNavBar extends StatelessWidget {
               size: 20,
             ),
           ),
-          activeIcon: const Icon(Icons.home, color: Colors.blue, size: 30),
+          activeIcon: const Icon(Icons.home,
+              color: Color.fromRGBO(33, 150, 243, 1), size: 30),
           label: 'Home',
         ),
         BottomNavigationBarItem(
@@ -39,7 +41,7 @@ class CustomBottomNavBar extends StatelessWidget {
           ),
           activeIcon:
               const Icon(Icons.add_circle, color: Colors.green, size: 30),
-          label: 'Create',
+          label: 'create',
         ),
         BottomNavigationBarItem(
           icon: Container(
@@ -74,7 +76,9 @@ class CustomBottomNavBar extends StatelessWidget {
             break;
           case 1:
             // Show Create Modal
-            _showCreateModal(context);
+            // _showCreateModal(context); the former one shows a pop up, but it was changed to just navigate straight to the screen
+            Navigator.pushNamed(context, '/create-post');
+
             break;
           case 2:
             // Navigate to Messages

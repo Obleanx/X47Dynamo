@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kakra/PROVIDERS/onboarding_provider.dart';
-import 'package:kakra/WIDGETS/reusable_button.dart';
 import 'package:provider/provider.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'Auth_screens/create_account.dart';
+import 'package:kakra/WIDGETS/reusable_button.dart';
+import 'package:kakra/PROVIDERS/onboarding_provider.dart';
+import 'package:kakra/SCREENS/Auth_screens/auth_manager.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class AllOnboardingScreens extends StatefulWidget {
   const AllOnboardingScreens({super.key});
@@ -22,15 +23,22 @@ class _AllOnboardingScreensState extends State<AllOnboardingScreens> {
     _controller.addListener(() {
       setState(() {
         _currentPage = _controller.page!.round();
+        _controller.dispose();
       });
     });
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
+  // Place this function in your screen/widget class
+  void _completeOnboarding(BuildContext context) async {
+    final authManager = AuthManager();
+    await authManager.completeOnboarding();
+
+    if (context.mounted) {
+      Navigator.pushReplacementNamed(context, '/signup');
+    }
   }
+
+// Replace your existing navigation calls in AllOnboardingScreens with:
 
   @override
   Widget build(BuildContext context) {
@@ -70,17 +78,13 @@ class _AllOnboardingScreensState extends State<AllOnboardingScreens> {
                 // Add your third onboarding screen here
               ],
             ),
+
+// The modified button widget
             Positioned(
               top: 50,
               right: 20,
               child: TextButton(
-                onPressed: () {
-                  // the skip functionality here
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignUpScreen()),
-                  );
-                },
+                onPressed: () => _completeOnboarding(context),
                 child: const Text("Skip"),
               ),
             ),
@@ -129,7 +133,7 @@ class _AllOnboardingScreensState extends State<AllOnboardingScreens> {
   }
 }
 
-//this method holds the design of all the onboardding screeen UI
+//this method holds the design of all the onboardding screens UI
 class TheOnboardingPage extends StatelessWidget {
   final String image;
   final String title;

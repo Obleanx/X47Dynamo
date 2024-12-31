@@ -42,58 +42,57 @@ class Hamburger extends StatelessWidget {
 
                 return Row(
                   children: [
-                    CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.grey[200],
-                      backgroundImage:
-                          profileImageUrl != null && profileImageUrl.isNotEmpty
-                              ? CachedNetworkImageProvider(profileImageUrl)
-                              : const AssetImage('lib/images/kr5.png')
-                                  as ImageProvider,
-                      child: profileImageUrl == null || profileImageUrl.isEmpty
-                          ? Icon(Icons.person, color: Colors.grey[400])
-                          : null,
-                    ),
-                    const SizedBox(width: 5),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          '$firstName ${lastName.isNotEmpty ? lastName : ''}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProfileScreen()),
+                        );
+                        if (kDebugMode) {
+                          print('Profile section tapped');
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 25,
+                            backgroundColor: Colors.grey[200],
+                            backgroundImage: profileImageUrl != null &&
+                                    profileImageUrl.isNotEmpty
+                                ? CachedNetworkImageProvider(profileImageUrl)
+                                : const AssetImage('lib/images/kr5.png')
+                                    as ImageProvider,
+                            child: profileImageUrl == null ||
+                                    profileImageUrl.isEmpty
+                                ? Icon(Icons.person, color: Colors.grey[400])
+                                : null,
                           ),
-                        ),
-                        const SizedBox(height: 5),
-                        InkWell(
-                          onTap: () {
-                            // Navigate to the ProfileScreen
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const ProfileScreen()),
-                            );
-                            if (kDebugMode) {
-                              print('Edit your profile tapped');
-                            }
-                          },
-                          child: const Text(
-                            'Edit your profile',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+                          const SizedBox(width: 5),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(
+                                '$firstName ${lastName.isNotEmpty ? lastName : ''}',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              const Text(
+                                'Edit your profile',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            ],
                           ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(width: 40),
-                    IconButton(
-                      icon: const Icon(Icons.settings_outlined),
-                      onPressed: () {},
+                        ],
+                      ),
                     ),
                   ],
                 );

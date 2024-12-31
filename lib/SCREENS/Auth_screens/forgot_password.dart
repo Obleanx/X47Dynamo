@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kakra/WIDGETS/reusable_button.dart';
 import 'package:kakra/PROVIDERS/auth_provider.dart';
-import 'package:kakra/WIDGETS/customtext_fileds.dart';
 import 'package:kakra/SCREENS/Auth_screens/create_account.dart';
 import 'package:kakra/SCREENS/Auth_screens/create_newpassword.dart';
 
@@ -114,8 +113,7 @@ class ForgotPasswordScreen extends StatelessWidget {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  const CreatePasswordScreen(),
+                              builder: (context) => SignUpScreen(),
                             ),
                           );
                         }

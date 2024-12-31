@@ -27,19 +27,53 @@ class _CustomTextFieldState extends State<CustomTextField> {
   String? _errorText;
   final FocusNode _focusNode = FocusNode();
   final TextEditingController _controller = TextEditingController();
-  String _countryCode = '+234'; // Default to Nigerian country code
+  String _countryCode = '+234';
 
-  // Lists of country codes remain the same as in the original code
+  // Define African country codes
+  final List<String> africanCountries = [
+    'NG', // Nigeria
+    'GH', // Ghana
+    'KE', // Kenya
+    'ZA', // South Africa
+    'EG', // Egypt
+    'ET', // Ethiopia
+    'TZ', // Tanzania
+    'UG', // Uganda
+    'RW', // Rwanda
+    'CM', // Cameroon
+    'CI', // Ivory Coast
+    'SN', // Senegal
+    'MA', // Morocco
+    'DZ', // Algeria
+    'TN', // Tunisia
+  ];
+
+  // Define EU country codes
+  final List<String> euCountries = [
+    'DE', // Germany
+    'FR', // France
+    'IT', // Italy
+    'ES', // Spain
+    'NL', // Netherlands
+    'BE', // Belgium
+    'SE', // Sweden
+    'AT', // Austria
+    'DK', // Denmark
+    'FI', // Finland
+    'IE', // Ireland
+    'GR', // Greece
+    'PT', // Portugal
+    'PL', // Poland
+    'GB', // United Kingdom (though not EU, commonly included for foreign numbers)
+  ];
 
   @override
   void initState() {
     super.initState();
     _focusNode.addListener(_onFocusChange);
-
-    // Set initial country code based on African or Foreign phone number
-    if (widget.isPhoneNumber) {
-      _countryCode = widget.isAfrican ? '+234' : '+44';
-    }
+    // Set initial country code based on type
+    _countryCode =
+        widget.isAfrican ? '+234' : '+44'; // Nigeria or UK as default
   }
 
   @override
@@ -52,7 +86,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   void _onFocusChange() {
     if (!_focusNode.hasFocus) {
-      // Validate when focus is lost
       setState(() {
         _errorText = widget.validator?.call(_controller.text);
       });
@@ -76,22 +109,20 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ),
           child: Row(
             children: [
-              // Country Code Picker for Phone Numbers
               if (widget.isPhoneNumber)
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 2.0,
-                  ), // Adjust spacing
+                  padding: const EdgeInsets.symmetric(horizontal: 2.0),
                   child: CountryCodePicker(
                     onChanged: (countryCode) {
                       setState(() {
-                        _countryCode = countryCode.dialCode ?? '+234';
+                        _countryCode = countryCode.dialCode ??
+                            (widget.isAfrican ? '+234' : '+44');
                       });
                     },
                     initialSelection: widget.isAfrican ? 'NG' : 'GB',
-                    favorite: widget.isAfrican
-                        ? ['NG', 'GH', 'KE', 'ZA']
-                        : ['GB', 'FR', 'DE'],
+                    favorite: widget.isAfrican ? africanCountries : euCountries,
+                    countryFilter:
+                        widget.isAfrican ? africanCountries : euCountries,
                     showCountryOnly: false,
                     showOnlyCountryWhenClosed: false,
                     alignLeft: false,

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:kakra/SCREENS/all_onboarding_screens.dart';
+import 'package:kakra/SCREENS/Auth_screens/auth_manager.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override
@@ -8,18 +9,23 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
+  final AuthManager _authManager = AuthManager();
+
   @override
   void initState() {
     super.initState();
+    _handleNavigation();
+  }
 
-    // Start a timer to navigate after 10 seconds
-    Timer(const Duration(seconds: 4), () {
-      // Navigate to the OnboardingScreen after 10 seconds
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const AllOnboardingScreens()),
-      );
-    });
+  Future<void> _handleNavigation() async {
+    await Future.delayed(
+        const Duration(seconds: 4)); // Keep the splash duration
+
+    if (mounted) {
+      final String initialRoute = await _authManager.getInitialRoute();
+
+      Navigator.pushReplacementNamed(context, initialRoute);
+    }
   }
 
   @override
